@@ -2,6 +2,7 @@ from config import (findall, DOTALL,
                     PARSING_XML_PATTERN,
                     LYRICS_DIR,
                     UNP_VEC,
+                    UNP_DIR,
                     json)
 
 from preparing_words import split_lyrics
@@ -25,7 +26,7 @@ def read_song_file(path2song_file: str) -> dict:
 
 
 def make_lyrics_file(song_code: tuple, lyrics: list):
-    with open(f'{LYRICS_DIR}/{song_code[0]}-{song_code[1]}-{song_code[3]}.json', 'w+', encoding="utf-8") as file:
+    with open(f'{LYRICS_DIR}/{song_code[0]}-{song_code[1]}-{song_code[2]}.json', 'w+', encoding="utf-8") as file:
         json.dump(lyrics, file, ensure_ascii=False)
 
 

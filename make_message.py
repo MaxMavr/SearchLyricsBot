@@ -79,14 +79,14 @@ def vec2str(vec: tuple, word: str = None):
     vec_char = slice_vec2subvec(vec)
 
     for i in range(DIM_SPACE):
-        if vec_char[i][1] == '0':
+        if vec_char[i][0] == 0:
             vec_line += f'0, ...{DIM - i * DIM_CHAR - 2}..., 0)'  # 2 — это нули
             break
 
         if i % 2 == 0:
-            vec_line += f'{IN_MARK}{vec_char[i][1:-1]}{OUT_MARK}, '
+            vec_line += f'{IN_MARK}{str(vec_char[i])[1:-1]}{OUT_MARK}, '
         else:
-            vec_line += f'{vec_char[i][1:-1]}, '
+            vec_line += f'{str(vec_char[i])[1:-1]}, '
 
     return vec_line
 

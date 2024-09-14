@@ -26,8 +26,9 @@ def split_lyrics(lyrics: str):
     clear_lyrics_line = []
 
     for r in lyrics.split('\n'):
-        if len(r) != 0:
-            clear_lyrics_line.append(r.strip())
+        cr = r.strip()
+        if len(cr) != 0:
+            clear_lyrics_line.append(cr)
 
     return clear_lyrics_line
 

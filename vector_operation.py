@@ -52,8 +52,7 @@ def vec2word(vec: tuple) -> str:
 
 
 def slice_vec2subvec(vec: tuple) -> list:
-    vec_char = [vec[i:i + DIM_CHAR] for i in range(NUM_SERV_VEC, len(vec), DIM_CHAR + NUM_SERV_VEC)]
-
+    vec_char = [vec[i:i + DIM_CHAR] for i in range(NUM_SERV_VEC, DIM + NUM_SERV_VEC, DIM_CHAR)]
     return vec_char
 
 
