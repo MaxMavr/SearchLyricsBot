@@ -3,6 +3,7 @@ from os      import listdir, remove
 from re      import findall, DOTALL
 from math    import sqrt
 from typing  import List, Tuple
+from typing import Union
 
 import sqlite3
 import json
@@ -190,6 +191,10 @@ ZERO_VEC = tuple(0 for _ in range(DIM + NUM_SERV_VEC))
 IN_MARK = '\033[4m'
 OUT_MARK = '\033[0m'
 
+# Поменять для бота <i> </i>
+IN_SKIP = '\033[3m'
+OUT_SKIP = '\033[0m'
+
 
 THIS_DIR = dirname(__file__)
 DB_DIR = THIS_DIR + '/DB'
@@ -197,8 +202,8 @@ UNP_DIR = DB_DIR + '/Unprocessed'
 LYRICS_DIR = DB_DIR + '/lyrics'
 VEC_DIR = DB_DIR + '/vectors'
 
-UNP_VEC = VEC_DIR + '/U.txt'
-SONG_INFO_DB = DB_DIR + '/song_info.db'
+UNP_VEC = VEC_DIR + '/U.json'
+SONGS_INFO_DB = DB_DIR + '/songs_info.db'
 
 PARSING_XML_PATTERN = r'<(\w+)>(.*?)<\/\1>'
 

@@ -4,6 +4,8 @@ from config import (DIM,
 
                     IN_MARK,
                     OUT_MARK,
+                    IN_SKIP,
+                    OUT_SKIP,
                     )
 
 from vector_operation import slice_vec2subvec
@@ -80,7 +82,7 @@ def vec2str(vec: tuple, word: str = None):
 
     for i in range(DIM_SPACE):
         if vec_char[i][0] == 0:
-            vec_line += f'0, ...{DIM - i * DIM_CHAR - 2}..., 0)'  # 2 — это нули
+            vec_line += f'0, {IN_SKIP}...{DIM - i * DIM_CHAR - 2}...{OUT_SKIP}, 0)'  # 2 — это нули
             break
 
         if i % 2 == 0:
@@ -93,7 +95,7 @@ def vec2str(vec: tuple, word: str = None):
 
 if __name__ == "__main__":
     print(vec2str(
-        (30, 2, 0, 30, 0, 4, 30, 3, 2, 30, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        (30, 30, 2, 0, 30, 0, 4, 30, 3, 2, 30, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

@@ -11,8 +11,11 @@ from config import (ZERO_VEC,
                     INDEXED_ALL_CHAR_MTRX,
                     INDEXED_ALL_CHAR_RVS_MTRX,
 
-                    sqrt
+                    sqrt,
+                    Union
                     )
+
+from file_interface import take_unp_vecs_from_file, add_unp_vec
 
 
 def word2vec(word: str) -> tuple:
@@ -51,7 +54,7 @@ def vec2word(vec: tuple) -> str:
     return word
 
 
-def slice_vec2subvec(vec: tuple) -> list:
+def slice_vec2subvec(vec:  Union[tuple, list]) -> list:
     vec_char = [vec[i:i + DIM_CHAR] for i in range(NUM_SERV_VEC, DIM + NUM_SERV_VEC, DIM_CHAR)]
     return vec_char
 
@@ -125,6 +128,59 @@ def calc_delta_sqr_err(vec1: tuple, vec2: tuple) -> float:
     delta_square_error = calc_cos_dist(vec1, vec2) ** 2
 
     return delta_square_error
+
+
+def bind_similar_vecs_from_unp():
+    vecs = take_unp_vecs_from_file()
+
+    clear_vecs = []
+
+    print("Начальное количество", len(vecs))
+
+    to_remove = set()
+
+    for x in range(len(vecs)):
+        for y in range(x + 1, len(vecs)):
+            if is_zero_dist(vecs[x][1], vecs[y][1]):
+                vecs[x][0].append(vecs[y][0][0])
+                to_remove.add(y)
+
+    vecs = [vec for i, vec in enumerate(vecs) if i not in to_remove]
+
+    print("Конечное количество", len(vecs))
+    add_unp_vec(vecs)
+
+
+def have_similar_vecs_from_vecs(vecs):
+    for x in range(len(vecs)):
+        for y in range(x + 1, len(vecs)):
+            if is_zero_dist(vecs[x][1], vecs[y][1]):
+                print("ЕСТЬ СОВПАДЕНИЯ")
+
+    print("нет совпадений")
+
+
+def calc_average_len_char(vecs):
+    amount = 0
+
+    for vec in vecs:
+        char_vec = slice_vec2subvec(vec)
+
+        for c in range(len(char_vec)):
+            if char_vec[c] == list(END_VEC):
+                amount += c
+                break
+
+    return amount / len(vecs)
+
+
+def calc_average_len_vec(vecs):
+    amount = 0
+
+    for vec in vecs:
+        amount += vec[LONG_INDEX]
+
+    return amount / len(vecs)
 
 
 if __name__ == "__main__":

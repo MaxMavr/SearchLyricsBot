@@ -1,74 +1,102 @@
 from config import (sqlite3,
-                    SONG_INFO_DB)
+                    SONGS_INFO_DB)
 
-con_song_info = sqlite3.connect(SONG_INFO_DB)
-cur_song_info = con_song_info.cursor()
+con_songs_info = sqlite3.connect(SONGS_INFO_DB)
+cur_songs_info = con_songs_info.cursor()
 
-cur_song_info.execute('''
-    PRAGMA foreign_keys=on;
-    
-    CREATE TABLE IF NOT EXISTS artists (
-        id           INTEGER NOT NULL PRIMARY KEY,
-        name         TEXT    NOT NULL DEFAULT 'artist',
-        amount_album INTEGER NOT NULL DEFAULT 0
-    );
-    
-    CREATE TABLE IF NOT EXISTS albums (
-        id           INTEGER NOT NULL PRIMARY KEY,
-        name         TEXT    NOT NULL DEFAULT 'album',
-        amount_song  INTEGER NOT NULL DEFAULT 0,
-        artist_id    INTEGER,
-        FOREIGN KEY  (artist_id) REFERENCES artists(id)
-    );
-    
-    CREATE TABLE IF NOT EXISTS songs (
-        id           INTEGER NOT NULL PRIMARY KEY,
-        name         TEXT    NOT NULL DEFAULT 'song',
-        link_song    TEXT    NOT NULL DEFAULT 'https://music.yandex.ru/',
-        album_id     INTEGER,
-        FOREIGN KEY (album_id) REFERENCES albums(id)
-    )
+cur_songs_info.execute(''' 
+    CREATE TABLE IF NOT EXISTS songs_info (
+    artist TEXT NOT NULL DEFAULT 'artist',
+    album  TEXT NOT NULL DEFAULT 'album',
+    song   TEXT NOT NULL DEFAULT 'song',
+    link   TEXT NOT NULL DEFAULT 'https://music.yandex.ru/'
+)
 ''')
+cur_songs_info.close()
+con_songs_info.close()
 
-cur_song_info.close()
-con_song_info.close()
+
+def count_songs_db(artist: str = None, album: str = None):
+    with sqlite3.connect(SONGS_INFO_DB) as con:
+        cur = con.cursor()
+        if artist is not None:
+            if album is not None:
+                cur.execute('SELECT COUNT(*) FROM songs_info WHERE artist = ? AND album = ?', (artist, album))
+                return cur.fetchone()[0]
+            cur.execute('SELECT COUNT(*) FROM songs_info WHERE artist = ?', (artist,))
+            return cur.fetchone()[0]
+        cur.execute('SELECT COUNT(*) FROM songs_info')
+        return cur.fetchone()[0]
 
 
-def add_song2db(artist: str,
-                album: str,
-                song: str) -> tuple:
+def add_songs_db(artist: str,
+                 album: str,
+                 song: str,
+                 link: str) -> int:
 
-    clear_artist = artist.lower().strip()
-    clear_album = album.lower().strip()
-    clear_song = song.lower().strip()
+    with sqlite3.connect(SONGS_INFO_DB) as con:
+        cur = con.cursor()
 
-    with sqlite3.connect(SONG_INFO_DB) as db:
+        cur.execute('SELECT rowid FROM songs_info WHERE artist = ? AND album = ? AND song = ?',
+                    (artist, album, song))
+
+        song_info = cur.fetchone()
+
+        if song_info is None:
+            cur.execute('INSERT INTO songs_info (artist, album, song, link) VALUES (?, ?, ?, ?)',
+                        (artist, album, song, link))
+            con.commit()
+
+            cur.execute('SELECT rowid FROM songs_info WHERE artist = ? AND album = ? AND song = ?',
+                        (artist, album, song))
+            return cur.fetchone()[0]
+
+        return song_info[0]
+
+
+def get_song_by_code(song_code: int) -> tuple:
+
+    with sqlite3.connect(SONGS_INFO_DB) as db:
         cur = db.cursor()
+        cur.execute('SELECT artist = ?, album = ?, song = ?, link = ? FROM songs_info WHERE rowid = ?',
+                    (song_code,))
+        artist, album, song, link = cur.fetchone()
 
-        cur.execute('SELECT id FROM artist WHERE name = ?', (clear_artist,))
-        artist_code = cur.fetchone()
-
-        cur.execute('SELECT id FROM album WHERE name = ?', (clear_album,))
-        album_code = cur.fetchone()[0]
-
-        cur.execute('SELECT id FROM song WHERE name = ?', (clear_song,))
-        song_code = cur.fetchone()[0]
-
-    return artist_code, album_code, song_code
+    return artist, album, song, link
 
 
-def get_song_by_id(song_code: str) -> tuple:
-    artist_id, album_id, song_id = song_code.split()
+if __name__ == "__main__":
+    add_songs_db("Дурной Вкус", "светомузыка", "Мяу", "-")
+    add_songs_db("Дурной Вкус", "светомузыка", "Думаешь ты", "-")
+    add_songs_db("Дурной Вкус", "светомузыка", "with you", "-")
+    add_songs_db("Дурной Вкус", "светомузыка", "Висели вместе", "-")
+    add_songs_db("Дурной Вкус", "светомузыка", "Светомузыка", "-")
+    add_songs_db("Дурной Вкус", "светомузыка", "kill me", "-")
+    add_songs_db("Буерак", "Репост модерн", "Ладони", "-")
+    add_songs_db("Буерак", "Репост модерн", "Репост модерн", "-")
+    add_songs_db("Буерак", "Репост модерн", "Я танцую сам с собой", "-")
+    add_songs_db("Буерак", "Репост модерн", "Модные ребята со взглядом в пустоту", "-")
+    add_songs_db("Буерак", "Репост модерн", "Нет любви", "-")
+    add_songs_db("Буерак", "Репост модерн", "Грустно", "-")
+    add_songs_db("Буерак", "Репост модерн", "Неважно", "-")
+    add_songs_db("Буерак", "Репост модерн", "Тупой", "-")
+    add_songs_db("Буерак", "Репост модерн", "", "-")
+    add_songs_db("Буерак", "Голд 2", "Голд 2", "-")
+    add_songs_db("ТВОИ КОШМАРЫ", "Машинистам", "Машинистам", "-")
 
-    with sqlite3.connect(SONG_INFO_DB) as db:
-        cur = db.cursor()
-        cur.execute('SELECT name FROM artist WHERE id = ?', (artist_id,))
-        artist = cur.fetchone()[0]
 
-        cur.execute('SELECT name FROM album WHERE id = ?', (album_id,))
-        album = cur.fetchone()[0]
 
-        cur.execute('SELECT name FROM song WHERE id = ?', (song_id,))
-        song = cur.fetchone()[0]
 
-    return artist, album, song
+
+
+
+
+
+
+
+
+
+
+
+
+

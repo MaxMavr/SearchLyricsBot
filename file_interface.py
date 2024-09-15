@@ -2,10 +2,9 @@ from config import (findall, DOTALL,
                     PARSING_XML_PATTERN,
                     LYRICS_DIR,
                     UNP_VEC,
-                    UNP_DIR,
                     json)
 
-from preparing_words import split_lyrics
+from preparing_words import split_lyrics, cleared_word
 
 
 def read_song_file(path2song_file: str) -> dict:
@@ -25,21 +24,32 @@ def read_song_file(path2song_file: str) -> dict:
         return song_info
 
 
-def make_lyrics_file(song_code: tuple, lyrics: list):
-    with open(f'{LYRICS_DIR}/{song_code[0]}-{song_code[1]}-{song_code[2]}.json', 'w+', encoding="utf-8") as file:
+def make_vec_file(path2file: str, vecs: list):
+    with open(f'{path2file}.json', 'w+', encoding="utf-8") as file:
+        json.dump(vecs, file, ensure_ascii=False)
+
+
+def make_lyrics_file(song_code: int, lyrics: list):
+    with open(f'{LYRICS_DIR}/{song_code}.json', 'w+', encoding="utf-8") as file:
         json.dump(lyrics, file, ensure_ascii=False)
 
 
 def take_line_from_lyrics_file(line_code: tuple) -> str:
-    with open(f'{LYRICS_DIR}/{line_code[0]}-{line_code[1]}-{line_code[2]}.json', 'w+', encoding="utf-8") as file:
+    with open(f'{LYRICS_DIR}/{line_code[0]}.json', 'w+', encoding="utf-8") as file:
         lyrics = json.load(file)
 
-        return lyrics[line_code[3]]
+        return lyrics[line_code[1]]
 
 
-def add_unp_vec(line_code: tuple, vec: tuple):
-    with open(UNP_VEC, 'a+', encoding="utf-8") as file:
-        file.write(f'{line_code}, {vec}\n')
+def add_unp_vec(vecs: list):
+    with open(UNP_VEC, 'w+', encoding="utf-8") as file:
+        json.dump(vecs, file, ensure_ascii=False)
+
+
+def take_unp_vecs_from_file():
+    with open(UNP_VEC, 'r', encoding="utf-8") as file:
+        return json.load(file)
+
 
 
 
