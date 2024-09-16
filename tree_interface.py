@@ -31,13 +31,14 @@ def make_new_vecs_from_songs_file():
                 vec2line_code.append(line_code)
                 vecs.append(vec)
 
-        map_bing = add2wrd_vecs_file(vecs)
+        map_bind = add2wrd_vecs_file(vecs)
 
-        add2vec_to_song_code_file(map_bing, vec2line_code)
+        add2vec_to_song_code_file(map_bind, vec2line_code)
 
 
 def THE_GREAT_SORTING_ALGORITHM():
     vecs = read_wrd_vecs_file()
+    search_vecs = []
 
     nodes = [node.make(vec=i) for i in range(len(vecs))]
     active_nodes = [i for i in range(len(nodes))]
@@ -67,6 +68,7 @@ def THE_GREAT_SORTING_ALGORITHM():
 
 def search_in_tree(find_vec: tuple):
     nodes = read_node_file()
+    current_node = len(nodes) - 1
     search_vecs = read_node_file()
 
 
@@ -74,17 +76,19 @@ def chech_paths_vec2line():
     vecs = read_wrd_vecs_file()
 
     for i in range(len(vecs)):
-        print(vec2str(vecs[i]))
+        print()
+        word = vec2word(vecs[i])
+        print(word)
 
         for line in take_line_by_vec_index(i, take_all=True):
-            print(line)
+            print(line.replace(word, f'\033[31m{word}\033[0m'))
 
 
 
 
 
 if __name__ == "__main__":
-    # make_new_vecs_from_songs_file()
-    chech_paths_vec2line()
+    make_new_vecs_from_songs_file()
+    # chech_paths_vec2line()
 
 

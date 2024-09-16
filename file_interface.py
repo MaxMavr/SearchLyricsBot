@@ -82,7 +82,7 @@ def add2src_vecs_file(vecs: list):
     add2list_file(SRC_VECS_FILE, vecs)
 
 
-def add2wrd_vecs_file(vecs: list) -> dict:
+def add2wrd_vecs_file(vecs: list) -> list:
     if isfile(WRD_VECS_FILE):
         old_vecs = __read_list_file(WRD_VECS_FILE)
     else:
@@ -94,23 +94,31 @@ def add2wrd_vecs_file(vecs: list) -> dict:
     return map_bind
 
 
-def add2vec_to_song_code_file(map_bind: dict, new_vec2line_code: list):
+def add2vec_to_song_code_file(map_bind: list, new_vec2line_code: list):
     if isfile(VEC_TO_LINE_CODE_FILE):
         old_vec2line_code = __read_dict_file(VEC_TO_LINE_CODE_FILE)
     else:
-        old_vec2line_code = dict()
+        old_vec2line_code = []
 
-    print(old_vec2line_code)
-    print(new_vec2line_code)
-    print(map_bind)
+    index_shift = len(old_vec2line_code)
 
-    for i in map_bind.keys():
-        if i not in old_vec2line_code.keys():
-            old_vec2line_code[i] = []
+    for i in range(len(map_bind) - len(old_vec2line_code)):
+        old_vec2line_code.append([])
 
+    for i in range(len(map_bind)):
         for lc in map_bind[i]:
-            line_code = new_vec2line_code[lc]
-            old_vec2line_code[i].append(line_code)
+            line_code = new_vec2line_code[lc - index_shift]
+
+            is_new = True
+
+            for j in range(len(old_vec2line_code[i])):
+                if line_code[0] == old_vec2line_code[i][j][0] and \
+                   line_code[1] == old_vec2line_code[i][j][1]:
+                    is_new = False
+                    break
+
+            if is_new:
+                old_vec2line_code[i].append(line_code)
 
     __make_dict_file(VEC_TO_LINE_CODE_FILE, old_vec2line_code)
 
