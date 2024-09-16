@@ -16,7 +16,7 @@ cur_songs_info.close()
 con_songs_info.close()
 
 
-def count_songs_db(artist: str = None, album: str = None):
+def count_songs_info_db(artist: str = None, album: str = None):
     with sqlite3.connect(SONGS_INFO_DB) as con:
         cur = con.cursor()
         if artist is not None:
@@ -29,10 +29,10 @@ def count_songs_db(artist: str = None, album: str = None):
         return cur.fetchone()[0]
 
 
-def add_songs_db(artist: str,
-                 album: str,
-                 song: str,
-                 link: str) -> int:
+def add_songs_info_db(artist: str,
+                      album: str,
+                      song: str,
+                      link: str) -> int:
 
     with sqlite3.connect(SONGS_INFO_DB) as con:
         cur = con.cursor()
@@ -54,7 +54,7 @@ def add_songs_db(artist: str,
         return song_info[0]
 
 
-def get_song_by_code(song_code: int) -> tuple:
+def get_song_info_by_song_code(song_code: int) -> tuple:
 
     with sqlite3.connect(SONGS_INFO_DB) as db:
         cur = db.cursor()
@@ -66,23 +66,23 @@ def get_song_by_code(song_code: int) -> tuple:
 
 
 if __name__ == "__main__":
-    add_songs_db("Дурной Вкус", "светомузыка", "Мяу", "-")
-    add_songs_db("Дурной Вкус", "светомузыка", "Думаешь ты", "-")
-    add_songs_db("Дурной Вкус", "светомузыка", "with you", "-")
-    add_songs_db("Дурной Вкус", "светомузыка", "Висели вместе", "-")
-    add_songs_db("Дурной Вкус", "светомузыка", "Светомузыка", "-")
-    add_songs_db("Дурной Вкус", "светомузыка", "kill me", "-")
-    add_songs_db("Буерак", "Репост модерн", "Ладони", "-")
-    add_songs_db("Буерак", "Репост модерн", "Репост модерн", "-")
-    add_songs_db("Буерак", "Репост модерн", "Я танцую сам с собой", "-")
-    add_songs_db("Буерак", "Репост модерн", "Модные ребята со взглядом в пустоту", "-")
-    add_songs_db("Буерак", "Репост модерн", "Нет любви", "-")
-    add_songs_db("Буерак", "Репост модерн", "Грустно", "-")
-    add_songs_db("Буерак", "Репост модерн", "Неважно", "-")
-    add_songs_db("Буерак", "Репост модерн", "Тупой", "-")
-    add_songs_db("Буерак", "Репост модерн", "", "-")
-    add_songs_db("Буерак", "Голд 2", "Голд 2", "-")
-    add_songs_db("ТВОИ КОШМАРЫ", "Машинистам", "Машинистам", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "Мяу", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "Думаешь ты", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "with you", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "Висели вместе", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "Светомузыка", "-")
+    add_songs_info_db("Дурной Вкус", "светомузыка", "kill me", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Ладони", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Репост модерн", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Я танцую сам с собой", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Модные ребята со взглядом в пустоту", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Нет любви", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Грустно", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Неважно", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "Тупой", "-")
+    add_songs_info_db("Буерак", "Репост модерн", "", "-")
+    add_songs_info_db("Буерак", "Голд 2", "Голд 2", "-")
+    add_songs_info_db("ТВОИ КОШМАРЫ", "Машинистам", "Машинистам", "-")
 
 
 

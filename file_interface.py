@@ -1,10 +1,18 @@
 from config import (findall, DOTALL,
                     PARSING_XML_PATTERN,
                     LYRICS_DIR,
-                    UNP_VEC,
-                    json)
 
-from preparing_words import split_lyrics, cleared_word
+                    WRD_VECS_FILE,
+                    SRC_VECS_FILE,
+                    NODE_FILE,
+                    VEC_TO_LINE_CODE_FILE,
+
+                    json,
+                    isfile,
+                    Union)
+
+from preparing_words import split_lyrics
+from vector_operation import bind_equal_vecs
 
 
 def read_song_file(path2song_file: str) -> dict:
@@ -15,18 +23,13 @@ def read_song_file(path2song_file: str) -> dict:
 
         matches = findall(PARSING_XML_PATTERN, file_text, DOTALL)
 
-        for matche in matches:
-            if matche[0] != 'lyrics':
-                song_info[matche[0]] = matche[1]
+        for match in matches:
+            if match[0] != 'lyrics':
+                song_info[match[0]] = match[1]
             else:
-                song_info[matche[0]] = split_lyrics(matche[1])
+                song_info[match[0]] = split_lyrics(match[1])
 
         return song_info
-
-
-def make_vec_file(path2file: str, vecs: list):
-    with open(f'{path2file}.json', 'w+', encoding="utf-8") as file:
-        json.dump(vecs, file, ensure_ascii=False)
 
 
 def make_lyrics_file(song_code: int, lyrics: list):
@@ -34,40 +37,123 @@ def make_lyrics_file(song_code: int, lyrics: list):
         json.dump(lyrics, file, ensure_ascii=False)
 
 
-def take_line_from_lyrics_file(line_code: tuple) -> str:
-    with open(f'{LYRICS_DIR}/{line_code[0]}.json', 'w+', encoding="utf-8") as file:
+def __read_line_from_lyrics_file(song_code: int, line: int) -> str:
+    with open(f'{LYRICS_DIR}/{song_code}.json', 'r', encoding="utf-8") as file:
         lyrics = json.load(file)
-
-        return lyrics[line_code[1]]
-
-
-def add_unp_vec(vecs: list):
-    with open(UNP_VEC, 'w+', encoding="utf-8") as file:
-        json.dump(vecs, file, ensure_ascii=False)
+        return lyrics[line]
 
 
-def take_unp_vecs_from_file():
-    with open(UNP_VEC, 'r', encoding="utf-8") as file:
+def __make_list_file(path2file: str, __list: list):
+    with open(path2file, 'w+', encoding="utf-8") as file:
+        json.dump(__list, file, ensure_ascii=False)
+
+
+def __read_list_file(path2file: str) -> list:
+    with open(path2file, 'r', encoding='utf-8') as file:
         return json.load(file)
 
 
+def __make_dict_file(path2file: str, __dict: dict):
+    with open(path2file, 'w+', encoding="utf-8") as file:
+        json.dump(__dict, file, ensure_ascii=False)
 
 
-'''
-def make_lyrics_file_from_links_file(path2links_file) -> list:
-    with open(path2links_file, 'r', encoding="utf-8") as file:
-        links = file.read().split()
+def __read_dict_file(path2file: str) -> dict:
+    with open(path2file, 'r', encoding='utf-8') as file:
+        return json.load(file)
 
-        for link in links:
-            response = requests.get(link)
 
-            # Проверяем статус-код
-            if response.status_code == 200:
-                print(response.text)
+def add2list_file(path2file: str, list_: list):
+    if isfile(path2file):
+        old_list_ = __read_list_file(path2file)
+    else:
+        old_list_ = []
 
-            else:
-                print(f'\n\nmake_lyrics_file_from_links_file:\nОшибка соединения!\nКод:{response.status_code}\n\n')
-'''
+    new_list_ = old_list_ + list_
+
+    __make_list_file(path2file, new_list_)
+
+
+def add2node_file(nodes: list):
+    add2list_file(NODE_FILE, nodes)
+
+
+def add2src_vecs_file(vecs: list):
+    add2list_file(SRC_VECS_FILE, vecs)
+
+
+def add2wrd_vecs_file(vecs: list) -> dict:
+    if isfile(WRD_VECS_FILE):
+        old_vecs = __read_list_file(WRD_VECS_FILE)
+    else:
+        old_vecs = []
+
+    new_vecs, map_bind = bind_equal_vecs(old_vecs + vecs)
+
+    __make_list_file(WRD_VECS_FILE, new_vecs)
+    return map_bind
+
+
+def add2vec_to_song_code_file(map_bind: dict, new_vec2line_code: list):
+    if isfile(VEC_TO_LINE_CODE_FILE):
+        old_vec2line_code = __read_dict_file(VEC_TO_LINE_CODE_FILE)
+    else:
+        old_vec2line_code = dict()
+
+    print(old_vec2line_code)
+    print(new_vec2line_code)
+    print(map_bind)
+
+    for i in map_bind.keys():
+        if i not in old_vec2line_code.keys():
+            old_vec2line_code[i] = []
+
+        for lc in map_bind[i]:
+            line_code = new_vec2line_code[lc]
+            old_vec2line_code[i].append(line_code)
+
+    __make_dict_file(VEC_TO_LINE_CODE_FILE, old_vec2line_code)
+
+
+def read_node_file() -> list:
+    return __read_list_file(NODE_FILE)
+
+
+def read_wrd_vecs_file() -> list:
+    return __read_list_file(WRD_VECS_FILE)
+
+
+def read_src_vecs_file() -> list:
+    return __read_list_file(SRC_VECS_FILE)
+
+
+def take_line_by_vec_index(vec_index: int, take_all: bool = False) -> Union[str, list]:
+    vecs2line_codes = __read_list_file(VEC_TO_LINE_CODE_FILE)
+    line_codes = vecs2line_codes[vec_index]
+
+    if take_all:
+        lines = []
+        for line_code in line_codes:
+            song_code, line = line_code
+            lines.append(__read_line_from_lyrics_file(song_code, line))
+
+        return lines
+
+    first_line_code = line_codes.pop(0)
+    line_codes.append(first_line_code)
+
+    song_code, line = first_line_code
+
+    __make_list_file(VEC_TO_LINE_CODE_FILE, vecs2line_codes)
+
+    return __read_line_from_lyrics_file(song_code, line)
+
+
+def take_word_by_vec_index(vec_index: int) -> str:
+    vecs = __read_list_file(WRD_VECS_FILE)
+    return vecs[vec_index]
+
 
 if __name__ == '__main__':
-    pass
+    print(take_word_by_vec_index(185))
+    print(__read_line_from_lyrics_file(1, 54))

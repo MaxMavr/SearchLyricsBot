@@ -51,7 +51,8 @@ make_vec_file(f"{VEC_DIR}/nodes1", nodes)
 def take_vecs_from_vectors1():
     with open(f"{VEC_DIR}/vectors1.json", 'r', encoding="utf-8") as file:
         return json.load(file)
-    
+
+
 def take_nodes_from_nodes1():
     with open(f"{VEC_DIR}/nodes1.json", 'r', encoding="utf-8") as file:
         return json.load(file)

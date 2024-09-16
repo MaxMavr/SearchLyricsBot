@@ -66,7 +66,7 @@ def make_artists_message(
     return msg
 
 
-def vec2str(vec: tuple, word: str = None):
+def vec2str(vec: tuple, word: str = None) -> str:
     if word is not None:
         vec_line = ''
         for i in range(len(word)):
@@ -80,7 +80,7 @@ def vec2str(vec: tuple, word: str = None):
 
     vec_char = slice_vec2subvec(vec)
 
-    for i in range(DIM_SPACE):
+    for i in range(len(vec_char)):
         if vec_char[i][0] == 0:
             vec_line += f'0, {IN_SKIP}...{DIM - i * DIM_CHAR - 2}...{OUT_SKIP}, 0)'  # 2 — это нули
             break
@@ -95,13 +95,14 @@ def vec2str(vec: tuple, word: str = None):
 
 if __name__ == "__main__":
     print(vec2str(
-        (30, 30, 2, 0, 30, 0, 4, 30, 3, 2, 30, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        (60.860496218811754, 5, 30, 2, 7, 30, 3, 4, 30, 3, 2, 30, 2, 3,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0),
         word='лиса'
     ))
 

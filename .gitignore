@@ -1,4 +1,4 @@
-TEST/
 .idea/
 __pycache__/
 .git/
+/test*

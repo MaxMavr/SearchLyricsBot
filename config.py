@@ -1,5 +1,25 @@
-from os.path import dirname
-from os      import listdir, remove
+"""
+CHAR_CYR_MTRX = [
+    'ё',
+    'йцукенгшщзхъ',
+    'фывапролджэ',
+    'ячсмитьбю'
+]
+
+CHAR_LAT_MTRX = [
+    'qwertyuiop',
+    'asdfghjkl',
+    'zxcvbnm'
+]
+
+CHAR_NUM_MTRX = '1234567890'
+
+ALL_CHAR_MTRX = [CHAR_NUM_MTRX, CHAR_LAT_MTRX, CHAR_CYR_MTRX]
+"""
+
+
+from os.path import dirname, isfile
+from os      import listdir, remove, makedirs
 from re      import findall, DOTALL
 from math    import sqrt
 from typing  import List, Tuple
@@ -9,33 +29,25 @@ import sqlite3
 import json
 import requests
 
-# Размерность векторного пространства (48 символов по 3 позиции для каждого (см. INDEXED_ALL_CHAR_MTRX)
-DIM_SPACE = 48
-DIM_CHAR = 3
-DIM = DIM_SPACE * DIM_CHAR
 
-NUM_SERV_VEC = 1
-LONG_INDEX = 0
+# Для работы с векторами
+# 48 символов по 3 позиции для каждого (см. INDEXED_ALL_CHAR_MTRX)
+DIM_SPACE = 48  # Размерность чар-векторного вектора
+DIM_CHAR = 3  # Размерность чар-вектора
+DIM = DIM_SPACE * DIM_CHAR  # Размерность вектора
+
+SERV_NUM_INDEXS = 2  # Кол-во служебных векторов
+LENGTH_INDEX = 0  # Индекс длины вектора
+LENGTH_CHAR_INDEX = 1  # Индекс длины вектора
+
+MAX_LENGTH_VEC = sqrt(DIM * 15 ** 2)  # 15 среднее значение координаты
+
+ZERO_VEC = tuple(0 for _ in range(DIM + SERV_NUM_INDEXS))  # пустой вектор (Нулевой)
 
 
+# Для очисти, перевода слов в вектора,
 # Все символы, которые мы обрабатываем (см. INDEXED_ALL_CHAR_MTRX)
 ALL_CHAR_SRT = 'abcdefghijklmnopqrstuvwxyz0123456789абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
-
-# CHAR_CYR_MTRX = [
-#     'ё',
-#     'йцукенгшщзхъ',
-#     'фывапролджэ',
-#     'ячсмитьбю'
-# ]
-# CHAR_LAT_MTRX = [
-#     'qwertyuiop',
-#     'asdfghjkl',
-#     'zxcvbnm'
-# ]
-# CHAR_NUM_MTRX = '1234567890'
-#
-# ALL_CHAR_MTRX = [CHAR_NUM_MTRX, CHAR_LAT_MTRX, CHAR_CYR_MTRX]
-
 # Индексированная матрица ALL_CHAR_MTRX и обратная к ней
 INDEXED_ALL_CHAR_MTRX = {
     "1": (10, 0, 0),
@@ -179,34 +191,42 @@ INDEXED_ALL_CHAR_RVS_MTRX = {
     (30, 3, 7): "б",
     (30, 3, 8): "ю",
 }
-
-# (0, n, n) — служебные суб-вектора
-END_VEC = tuple(0 for _ in range(DIM_CHAR))  # пустой суб-вектор (Конец вектора)
-
-
-ZERO_VEC = tuple(0 for _ in range(DIM + NUM_SERV_VEC))
+# (0, n, n) — служебные чар-вектора
+END_VEC = tuple(0 for _ in range(DIM_CHAR))  # пустой чар-вектор (Конец вектора)
 
 
-# Поменять для бота <u> </u>
-IN_MARK = '\033[4m'
-OUT_MARK = '\033[0m'
-
-# Поменять для бота <i> </i>
-IN_SKIP = '\033[3m'
-OUT_SKIP = '\033[0m'
+# Для оформления сообщений (Поменять для ТГ)
+IN_MARK = '\033[4m'   # <u>
+OUT_MARK = '\033[0m'  # </u>
+IN_SKIP = '\033[3m'   # <i>
+OUT_SKIP = '\033[0m'  # </i>
 
 
-THIS_DIR = dirname(__file__)
-DB_DIR = THIS_DIR + '/DB'
-UNP_DIR = DB_DIR + '/Unprocessed'
+# Для работы с файлами и БД
+MAIN_DIR = dirname(__file__)
+
+DB_DIR = MAIN_DIR + '/DB'
 LYRICS_DIR = DB_DIR + '/lyrics'
 VEC_DIR = DB_DIR + '/vectors'
+SONGS_INFO_DIR = DB_DIR + '/songs_info'
 
-UNP_VEC = VEC_DIR + '/U.json'
 SONGS_INFO_DB = DB_DIR + '/songs_info.db'
+
+WRD_VECS_FILE = VEC_DIR + '/word_vectors.json'
+SRC_VECS_FILE = VEC_DIR + '/search_vectors.json'
+NODE_FILE = VEC_DIR + '/node.json'
+
+VEC_TO_LINE_CODE_FILE = DB_DIR + '/vec_to_songs_code.json'
+
 
 PARSING_XML_PATTERN = r'<(\w+)>(.*?)<\/\1>'
 
 
+makedirs(DB_DIR, exist_ok=True)
+makedirs(LYRICS_DIR, exist_ok=True)
+makedirs(VEC_DIR, exist_ok=True)
+makedirs(SONGS_INFO_DIR, exist_ok=True)
+
+
 if __name__ == "__main__":
-    print(len(ZERO_VEC))
+    pass

@@ -1,62 +1,90 @@
-from config import UNP_DIR, listdir
-from db_interface import add_songs_db
+from config import SONGS_INFO_DIR, listdir
+from db_interface import *
 from vector_operation import *
 from preparing_words import *
 from file_interface import *
+import node_interface as node
+from make_message import vec2str
 
 
-def make_new_unp_vecs():
-    for song_file in listdir(UNP_DIR):
-        song_info = read_song_file(f'{UNP_DIR}/{song_file}')
+def make_new_vecs_from_songs_file():
+    for song_file in listdir(SONGS_INFO_DIR):
+        song_info = read_song_file(f'{SONGS_INFO_DIR}/{song_file}')
 
-        song_code = add_songs_db(song_info['artist'],
-                                 song_info['album'],
-                                 song_info['song'],
-                                 song_info['link'])
+        song_code = add_songs_info_db(song_info['artist'],
+                                      song_info['album'],
+                                      song_info['song'],
+                                      song_info['link'])
 
         lyrics = song_info['lyrics']
 
         make_lyrics_file(song_code, lyrics)
 
         vecs = []
+        vec2line_code = []
 
         for line in range(len(lyrics)):
-            line_code = (line, song_code)
+            line_code = (song_code, line)
 
             for word in split_line(lyrics[line]):
                 vec = word2vec(word)
+                vec2line_code.append(line_code)
+                vecs.append(vec)
 
-                vecs.append([[line_code], vec])
+        map_bing = add2wrd_vecs_file(vecs)
 
-        add_unp_vec(vecs)
+        add2vec_to_song_code_file(map_bing, vec2line_code)
 
 
 def THE_GREAT_SORTING_ALGORITHM():
-    pass
-    # vecs = take_unp_vecs_from_file()
-    # sort_vecs = [i[1] for i in vecs]
-    #
-    # for i in range(len(sort_vecs) // 2):
+    vecs = read_wrd_vecs_file()
+
+    nodes = [node.make(vec=i) for i in range(len(vecs))]
+    active_nodes = [i for i in range(len(nodes))]
+
+    len_active_nodes = len(active_nodes)
+    print(f'Нашёл {len_active_nodes} векторов')
+
+    sim_between_nodes = []
+
+    for i in range(len(nodes)):
+        vec_i = vecs[node.get_vec(nodes[i])]
+        tmp_sim_between_nodes = []
+        for j in range(i + 1, len(nodes)):
+            vec_j = vecs[node.get_vec(nodes[j])]
+
+            tmp_sim_between_nodes.append(calc_sim_vecs(vec_i, vec_j))
+        sim_between_nodes.append(tmp_sim_between_nodes)
+
+    for i in sim_between_nodes:
+        print(i)
+
+
+    # while len_active_nodes > 1:
+    #     print(f'Осталось {len_active_nodes} векторов')
+    #     len_active_nodes -= 1
+
+
+def search_in_tree(find_vec: tuple):
+    nodes = read_node_file()
+    search_vecs = read_node_file()
+
+
+def chech_paths_vec2line():
+    vecs = read_wrd_vecs_file()
+
+    for i in range(len(vecs)):
+        print(vec2str(vecs[i]))
+
+        for line in take_line_by_vec_index(i, take_all=True):
+            print(line)
 
 
 
-    # while n > 3:
-    #     pass
-
-    # print(sort_vecs)
-
-
-def soft_add_new_vecs2tree():
-    pass
 
 
 if __name__ == "__main__":
-    make_new_unp_vecs()
-    bind_similar_vecs_from_unp()
-    have_similar_vecs_from_vecs(take_unp_vecs_from_file())
-
-    print(calc_average_len_char([i[1] for i in take_unp_vecs_from_file()]))
-
-    THE_GREAT_SORTING_ALGORITHM()
+    # make_new_vecs_from_songs_file()
+    chech_paths_vec2line()
 
 
