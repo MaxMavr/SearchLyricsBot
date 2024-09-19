@@ -1,5 +1,4 @@
 from config import (DIM,
-                    DIM_SPACE,
                     DIM_CHAR,
 
                     IN_MARK,
@@ -105,7 +104,3 @@ if __name__ == "__main__":
          0, 0, 0, 0, 0, 0),
         word='лиса'
     ))
-
-
-
-

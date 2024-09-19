@@ -5,7 +5,7 @@ from config import (ZERO_VEC,
                     DIM_SPACE,
                     DIM_CHAR,
 
-                    SERV_NUM_INDEXS,
+                    SERV_NUM_INDEXES,
                     LENGTH_INDEX,
                     LENGTH_CHAR_INDEX,
                     MAX_LENGTH_VEC,
@@ -27,7 +27,7 @@ def word2vec(word: str) -> tuple:
         char = INDEXED_ALL_CHAR_MTRX[word[i]]
 
         for c in range(len(char)):
-            vec[i * DIM_CHAR + c + SERV_NUM_INDEXS] = char[c]
+            vec[i * DIM_CHAR + c + SERV_NUM_INDEXES] = char[c]
 
     vec[LENGTH_INDEX] = __calc_length_vec(vec)
     vec[LENGTH_CHAR_INDEX] = DIM_SPACE if len(word) >= DIM_SPACE else len(word) + 1
@@ -55,21 +55,21 @@ def vec2word(vec: Union[tuple, list]) -> str:
 
 
 def slice_vec2subvec(vec:  Union[tuple, list]) -> list:
-    vec_char = [tuple(vec[i:i + DIM_CHAR]) for i in range(SERV_NUM_INDEXS, vec[LENGTH_CHAR_INDEX] * DIM_CHAR + SERV_NUM_INDEXS, DIM_CHAR)]
+    vec_char = [tuple(vec[i:i + DIM_CHAR]) for i in range(SERV_NUM_INDEXES, vec[LENGTH_CHAR_INDEX] * DIM_CHAR + SERV_NUM_INDEXES, DIM_CHAR)]
     return vec_char
 
 
 def rounded_vec(vec: Union[tuple, list]) -> tuple:
     round_vec = list(ZERO_VEC)
 
-    for i in range(DIM_SPACE + SERV_NUM_INDEXS):
+    for i in range(DIM_SPACE + SERV_NUM_INDEXES):
         round_vec[i] = int(vec[i])
 
     return tuple(round_vec)
 
 
 def is_zero_dist(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> bool:
-    for d in range(DIM + SERV_NUM_INDEXS):
+    for d in range(DIM + SERV_NUM_INDEXES):
         if vec1[d] != vec2[d]:
             return False
     return True
@@ -82,7 +82,7 @@ def __calc_length_vec(vec: Union[tuple, list]) -> float:
     if vec[LENGTH_INDEX] == 0:
         amount = 0
 
-        for d in vec[SERV_NUM_INDEXS:]:
+        for d in vec[SERV_NUM_INDEXES:]:
             amount += d ** 2
 
         vec[LENGTH_INDEX] = sqrt(amount)
@@ -97,7 +97,7 @@ def __calc_length_vec(vec: Union[tuple, list]) -> float:
 def __calc_cos_sim(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> float:
     amount = 0
 
-    for d in range(SERV_NUM_INDEXS, DIM + SERV_NUM_INDEXS):
+    for d in range(SERV_NUM_INDEXES, DIM + SERV_NUM_INDEXES):
         amount += vec1[d] * vec2[d]
 
     cos_sim = amount / (vec1[LENGTH_INDEX] * vec2[LENGTH_INDEX])
@@ -109,7 +109,7 @@ def __calc_cos_sim(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> float:
 def __calc_euclid_dist(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> float:
     amount = 0
 
-    for d in range(SERV_NUM_INDEXS, DIM + SERV_NUM_INDEXS):
+    for d in range(SERV_NUM_INDEXES, DIM + SERV_NUM_INDEXES):
         amount += (vec1[d] - vec2[d]) ** 2
 
     euclid_dist = sqrt(amount)
@@ -117,18 +117,16 @@ def __calc_euclid_dist(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> fl
     return euclid_dist
 
 
-# Cходство векторов
+# Сходство векторов
 def calc_sim_vecs(vec1: Union[tuple, list],
                   vec2: Union[tuple, list],
-                  mode: str = 'e') -> float:
+                  mode: str = 'c') -> float:
     sim = 0
 
     if mode == 'e':
-        sim = MAX_LENGTH_VEC - __calc_euclid_dist(vec1, vec2)
+        sim = __calc_euclid_dist(vec1, vec2)
     elif mode == 'c':
         sim = __calc_cos_sim(vec1, vec2)
-    elif mode == 's':
-        sim = __calc_delta_sqr_err(vec1, vec2)
 
     if '2' in mode:
         return sim ** 2
@@ -139,28 +137,16 @@ def calc_sim_vecs(vec1: Union[tuple, list],
     return sim
 
 
-def __calc_cent_vec(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> tuple:
+def calc_cent_vec(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> tuple:
     center_vec = list(ZERO_VEC)
 
-    for d in range(SERV_NUM_INDEXS, DIM + SERV_NUM_INDEXS):
+    for d in range(SERV_NUM_INDEXES, DIM + SERV_NUM_INDEXES):
         center_vec[d] = (vec1[d] + vec2[d]) / 2
 
     center_vec[LENGTH_INDEX] = __calc_length_vec(center_vec)
+    center_vec[LENGTH_CHAR_INDEX] = max(vec1[LENGTH_CHAR_INDEX], vec2[LENGTH_CHAR_INDEX])
 
     return tuple(center_vec)
-
-
-def __calc_delta_sqr_err(vec1: Union[tuple, list], vec2: Union[tuple, list]) -> float:
-    """
-    В общем случае нужно считать:
-    ((n1 * n2) / (n1 + n2)) * d(C1, C2) ** 2,
-
-    где n — количество элементов кластера, С — центр кластера
-    """
-
-    delta_square_error = __calc_cos_sim(vec1, vec2) ** 2
-
-    return delta_square_error
 
 
 def bind_equal_vecs(vecs: list) -> tuple:
@@ -210,7 +196,7 @@ def calc_avg_len_vec(vecs: list) -> float:
 
 
 if __name__ == "__main__":
-    pass
+    print(word2vec('ак'))
     # fox_vec1 = word2vec('лиса')
     # fox_vec2 = word2vec('лисонька')
     #
@@ -236,6 +222,3 @@ if __name__ == "__main__":
     # print(f"{word2vec('лиса')}")
     # print(f"{word2vec('лисонька') =                                }")
     # print(f"{rounded_vec(calc_centvec(fox_vec1, fox_vec2)) =       }")
-
-
-

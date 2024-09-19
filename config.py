@@ -21,9 +21,10 @@ ALL_CHAR_MTRX = [CHAR_NUM_MTRX, CHAR_LAT_MTRX, CHAR_CYR_MTRX]
 from os.path import dirname, isfile
 from os      import listdir, remove, makedirs
 from re      import findall, DOTALL
-from math    import sqrt
+from math    import sqrt, ceil, log2
+from time    import time
 from typing  import List, Tuple
-from typing import Union
+from typing  import Union
 
 import sqlite3
 import json
@@ -36,13 +37,13 @@ DIM_SPACE = 48  # Размерность чар-векторного векто�
 DIM_CHAR = 3  # Размерность чар-вектора
 DIM = DIM_SPACE * DIM_CHAR  # Размерность вектора
 
-SERV_NUM_INDEXS = 2  # Кол-во служебных векторов
+SERV_NUM_INDEXES = 2  # Кол-во служебных векторов
 LENGTH_INDEX = 0  # Индекс длины вектора
 LENGTH_CHAR_INDEX = 1  # Индекс длины вектора
 
 MAX_LENGTH_VEC = sqrt(DIM * 15 ** 2)  # 15 среднее значение координаты
 
-ZERO_VEC = tuple(0 for _ in range(DIM + SERV_NUM_INDEXS))  # пустой вектор (Нулевой)
+ZERO_VEC = tuple(0 for _ in range(DIM + SERV_NUM_INDEXES))  # пустой вектор (Нулевой)
 
 
 # Для очисти, перевода слов в вектора,
@@ -214,9 +215,11 @@ SONGS_INFO_DB = DB_DIR + '/songs_info.db'
 
 WRD_VECS_FILE = VEC_DIR + '/word_vectors.json'
 SRC_VECS_FILE = VEC_DIR + '/search_vectors.json'
-NODE_FILE = VEC_DIR + '/node.json'
+NODE_FILE = VEC_DIR + '/nodes.json'
 
 VEC_TO_LINE_CODE_FILE = DB_DIR + '/vec_to_songs_code.json'
+
+TREE_IMG_FILE = VEC_DIR + '/tree_img.svg'
 
 
 PARSING_XML_PATTERN = r'<(\w+)>(.*?)<\/\1>'

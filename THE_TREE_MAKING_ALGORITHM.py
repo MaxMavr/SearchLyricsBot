@@ -119,4 +119,3 @@ while current_node["left_node_index"] is not None or \
     print(f"{word_2_find.ljust(10)}: {left_word.ljust(10)} vs {right_word.ljust(10)}")
     print(f"          {str(left_similarity).ljust(10)} vs {str(right_similarity).ljust(10)}")
     print(f"  Winner: {current_word.ljust(10)}")
-

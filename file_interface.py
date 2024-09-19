@@ -1,18 +1,23 @@
 from config import (findall, DOTALL,
                     PARSING_XML_PATTERN,
                     LYRICS_DIR,
+                    ZERO_VEC,
 
                     WRD_VECS_FILE,
                     SRC_VECS_FILE,
                     NODE_FILE,
                     VEC_TO_LINE_CODE_FILE,
+                    TREE_IMG_FILE,
 
                     json,
                     isfile,
+                    ceil,
+                    log2,
                     Union)
 
 from preparing_words import split_lyrics
-from vector_operation import bind_equal_vecs
+from vector_operation import bind_equal_vecs, vec2word, calc_sim_vecs
+import node_interface as node
 
 
 def read_song_file(path2song_file: str) -> dict:
@@ -35,6 +40,85 @@ def read_song_file(path2song_file: str) -> dict:
 def make_lyrics_file(song_code: int, lyrics: list):
     with open(f'{LYRICS_DIR}/{song_code}.json', 'w+', encoding="utf-8") as file:
         json.dump(lyrics, file, ensure_ascii=False)
+
+
+def make_tree_img():
+    radius = 30
+    text_shift = 10
+    size = radius * 2
+
+    vecs = read_wrd_vecs_file()
+    search_vecs = read_src_vecs_file()
+    nodes = read_node_file()
+
+    print(len(vecs))
+    print(len(search_vecs))
+    print(len(nodes))
+    print()
+
+    current_node = len(nodes) - 1
+
+    with open(TREE_IMG_FILE, 'w+', encoding="utf-8") as canvas:
+        def draw_node(current_node: int, px, py, x, y) -> tuple:
+            right_node, left_node, parent_node, current_vec = nodes[current_node]
+
+            canvas.write(f'<polyline points="{x - radius},{y} {px},{y} {px},{py}"/>\n')
+
+            if left_node is None or right_node is None:
+                cur_word = vec2word(vecs[current_vec])
+
+                canvas.write(f'<circle cx="{x}" cy="{y}" r="{radius}"/>\n')
+                canvas.write(f'<text class="word" x="{x}" y="{y + text_shift}">{cur_word}</text>\n')
+
+                return x + size, y + size
+            else:
+                cur_word = vec2word(search_vecs[current_vec])
+
+                if parent_node is not None:
+                    sim_vecs = calc_sim_vecs(search_vecs[current_vec],
+                                             search_vecs[node.get_vec(nodes[parent_node])], 'c')
+                else:
+                    sim_vecs = 0
+
+                canvas.write(f'<circle cx="{x}" cy="{y}" r="{radius}"/>\n')
+                canvas.write(f'<text class="word" x="{x}" y="{y + text_shift}">{cur_word}</text>\n')
+                canvas.write(f'<text class="sim" x="{px}" y="{y}">{round(sim_vecs, 5)}</text>\n')
+
+                _, shift_y = draw_node(right_node, x, y, x + size, y + size)
+
+                shift_x, shift_y = draw_node(left_node, x, y, x + size, y + shift_y)
+
+                return x + shift_x, y + shift_y
+
+        canvas.write('''<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+viewBox="0 0 4000 2000">
+<style type="text/css">
+  circle{
+    stroke: #000;
+    stroke-width: 2;
+    fill: #fff;
+  }
+  polyline {
+    stroke: #000;
+    stroke-width: 2;
+    fill: #fff0;
+  }
+  text{
+    font-size: 15px;
+  }
+  .word{
+    text-anchor: middle;
+  }
+  .sim{
+    text-anchor: left;
+  }
+</style>
+        ''')
+
+        draw_node(current_node, 0, 0, size, size)
+
+        canvas.write('</svg>')
 
 
 def __read_line_from_lyrics_file(song_code: int, line: int) -> str:
@@ -74,12 +158,12 @@ def add2list_file(path2file: str, list_: list):
     __make_list_file(path2file, new_list_)
 
 
-def add2node_file(nodes: list):
-    add2list_file(NODE_FILE, nodes)
+def make_node_file(nodes: list):
+    __make_list_file(NODE_FILE, nodes)
 
 
-def add2src_vecs_file(vecs: list):
-    add2list_file(SRC_VECS_FILE, vecs)
+def make_src_vecs_file(vecs: list):
+    __make_list_file(SRC_VECS_FILE, vecs)
 
 
 def add2wrd_vecs_file(vecs: list) -> list:
@@ -163,5 +247,6 @@ def take_word_by_vec_index(vec_index: int) -> str:
 
 
 if __name__ == '__main__':
-    print(take_word_by_vec_index(185))
-    print(__read_line_from_lyrics_file(1, 54))
+    make_tree_img()
+    # print(take_word_by_vec_index(185))
+    # print(__read_line_from_lyrics_file(1, 54))
