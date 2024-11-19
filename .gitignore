@@ -4,5 +4,5 @@ __pycache__/
 /test*
 secret_const.py
 config/secret_const.json
-DB/*
+DB/*.db
 secret_const.json

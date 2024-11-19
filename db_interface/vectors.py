@@ -1,37 +1,38 @@
 from config.db import *
-from config.const import SONG_INFO_DB
+from config.const import VECTORS_DB
+client = chromadb.PersistentClient(path=VECTORS_DB)
 
 
-def __create():
-    pass
+def make_vector_id(song_id: str, line_id: int) -> str:
+    return f'{song_id}/{line_id}'
 
 
-def add(song_id: str, line_id: int, vector: Union[list, tuple]):
-    pass
+def split_vector_id(vector_id: str) -> Tuple[str, int]:
+    song_id, line_id = vector_id.split('/')
+    line_id = int(line_id)
+    return song_id, line_id
 
 
-def delete(song_id: str):
-    pass
+collection = client.get_collection(
+    name="collection_name",
+)
+
+collection = client.create_collection(
+    name="collection_name",
+    metadata={"hnsw:space": "cosine"}
+)
+
+collection.add(
+    embeddings=vectors,
+    ids=["id1", "id2", "id3", ...]
+)
 
 
-def get(song_id: str):
-    pass
+# https://docs.trychroma.com/guides#filtering-by-metadata:~:text=You%20can%20query%20by%20a%20set%20of
 
-
-def is_exists(songs_id: str):
-    pass
-
-
-def count():
-    pass
-
-
-def upd_text(song_id: str, text: bool):
-    pass
-
-
-def get_with_text():
-    pass
-
-
-__create()
+collection.query(
+    query_embeddings=vectors,
+    n_results=10,
+    where={"metadata_field": "is_equal_to_this"},
+    where_document={"$contains":"search_string"}
+)

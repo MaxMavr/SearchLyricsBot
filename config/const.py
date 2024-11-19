@@ -11,6 +11,7 @@ ERR_ARTISTS_FILE = __DB_DIR + '/err_artists.json'
 
 SONG_INFO_DB = __DB_DIR + '/song_info.db'
 NODES_DB = __DB_DIR + '/nodes.db'
+VECTORS_DB = __DB_DIR + '/vectors.vdb'
 USERS_DB = __DB_DIR + '/users.db'
 
 PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
