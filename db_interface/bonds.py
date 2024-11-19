@@ -53,6 +53,14 @@ def get_ids_by_song(id_song: str):
         return cursor.fetchall()
 
 
+# def get_nodes_by_page(page_number, page_size=20):
+#     offset = (page_number - 1) * page_size  # Вычисляем смещение
+#     with sqlite3.connect(NODES_DB) as conn:
+#         cursor = conn.cursor()
+#         cursor.execute('SELECT * FROM nodes LIMIT ? OFFSET ?', (page_size, offset))
+#         return cursor.fetchall()
+
+
 def is_exists_artist(artist_id: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()

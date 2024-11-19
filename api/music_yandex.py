@@ -49,19 +49,3 @@ def get_artist_id(artist_name: str) -> Tuple[str, str]:
         if search_result.best.result.name.lower() == artist_name.lower():
             return str(search_result.best.result.id), search_result.best.result.name
     return '', ''
-
-
-if __name__ == "__main__":
-    # a = 'noize mc'
-    # alb_id = 19061471
-    alb_id = 11637348
-
-    # aid, _ = get_artist_id(a)
-
-    # for i in get_artist_albums(aid):
-    #     print(i)
-
-    for i in get_album_songs(alb_id):
-        print(i)
-
-

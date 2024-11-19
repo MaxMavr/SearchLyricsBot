@@ -1,5 +1,5 @@
 from config.db import *
-from config.const import RAW_ARTISTS_FILE, ERR_ARTISTS_FILE
+from config.const import RAW_ARTISTS_FILE, ERR_ARTISTS_FILE, FEAT_ARTISTS_FILE
 
 
 def __is_file_exist(path2file: str) -> bool:
@@ -22,12 +22,23 @@ def read_raw_artists_file() -> list:
     return __read_json(RAW_ARTISTS_FILE)
 
 
-def make_raw_artists_file(raw_artists: list):
-    __make_json(RAW_ARTISTS_FILE, raw_artists)
+def clear_raw_artists_file():
+    if not isfile(RAW_ARTISTS_FILE):
+        return
+    remove(RAW_ARTISTS_FILE)
+
+
+def upd_feat_artists_songs(feat_artists: list):
+    if not __is_file_exist(FEAT_ARTISTS_FILE):
+        __make_json(FEAT_ARTISTS_FILE, [])
+    content = __read_json(FEAT_ARTISTS_FILE)
+    for feat_artist in feat_artists:
+        content.append(feat_artist)
+    __make_json(FEAT_ARTISTS_FILE, content)
 
 
 def upd_err_artists_songs(err_artists: list):
-    if not isfile(ERR_ARTISTS_FILE) or getsize(ERR_ARTISTS_FILE) == 0:
+    if not __is_file_exist(ERR_ARTISTS_FILE):
         __make_json(ERR_ARTISTS_FILE, [])
     content = __read_json(ERR_ARTISTS_FILE)
     for err_artist in err_artists:
