@@ -1,6 +1,7 @@
 from config.db import *
 from config.const import SONG_INFO_DB
 
+# ToDo: Проверка на переиздание песен (к альфа-версии)
 
 def __create():
     with sqlite3.connect(SONG_INFO_DB) as conn:
@@ -69,7 +70,7 @@ def upd_text_status(song_id: str, have_text: bool):
 def get_with_text():
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM songs WHERE have_text = 1')
+        cursor.execute('SELECT * FROM songs WHERE text IS NOT NULL')
         return cursor.fetchall()
 
 

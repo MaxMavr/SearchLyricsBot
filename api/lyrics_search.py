@@ -55,10 +55,20 @@ async def process_raw_artists():
 
 def get_song_lines(song_id):
     lyrics = get_song_lyrics(song_id)
-    for line in lyrics.split('\n'):
-        clear_line = line.strip()
+    lines = lyrics.split('\n')
+    two_lines = [lines[j:j + 2] for j in range(0, len(lines), 2)]
+    for line in two_lines:
+        clear_line = " ".join(line).strip()
         if clear_line != '':
             yield clear_line
+
+#
+# def get_song_lines(song_id):
+#     lyrics = get_song_lyrics(song_id)
+#     for line in lyrics.split('\n'):
+#         clear_line = line.strip()
+#         if clear_line != '':
+#             yield clear_line
 
 
 if __name__ == "__main__":

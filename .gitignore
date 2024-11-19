@@ -7,3 +7,4 @@ config/secret_const.json
 DB/*.db
 DB/*vdb
 secret_const.json
+chroma.log
