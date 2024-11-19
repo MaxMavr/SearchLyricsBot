@@ -2,3 +2,7 @@
 __pycache__/
 .git/
 /test*
+secret_const.py
+config/secret_const.json
+DB/*
+secret_const.json
