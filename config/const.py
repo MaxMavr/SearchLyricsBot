@@ -7,7 +7,7 @@ __CONFIG_DIR = f'{dirname(__file__)}/'
 __DB_DIR = __MAIN_DIR + '/DB'
 ARTISTS_DIR = __DB_DIR + '/artists'
 RAW_ARTISTS_FILE = __DB_DIR + '/raw_artists.json'
-FEAT_ARTISTS_FILE = __DB_DIR + '/raw_feat_artists.json'
+FEAT_ARTISTS_FILE = __DB_DIR + '/feat_artists.json'
 ERR_ARTISTS_FILE = __DB_DIR + '/err_artists.json'
 
 SONG_INFO_DB = __DB_DIR + '/song_info.db'
