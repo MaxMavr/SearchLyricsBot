@@ -5,4 +5,5 @@ __pycache__/
 secret_const.py
 config/secret_const.json
 DB/*.db
+DB/*vdb
 secret_const.json
