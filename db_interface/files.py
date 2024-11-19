@@ -33,9 +33,7 @@ def __upd_list_json(path2file: str, new_content: list):
 
 
 def clear_raw_artists_file():
-    if not isfile(RAW_ARTISTS_FILE):
-        return
-    remove(RAW_ARTISTS_FILE)
+    __make_json(RAW_ARTISTS_FILE, [])
 
 
 def upd_feat_artists_songs(feat_artists: list):
