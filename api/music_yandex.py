@@ -23,11 +23,9 @@ def get_album_songs(album_id):
             artists_id = [(str(artist.id), artist.name) for artist in song.artists]
             link = f'https://music.yandex.ru/album/{album_id}/track/{song_id}'
 
-            lyrics = None
-            if song.lyrics_info.has_available_text_lyrics:
-                lyrics = song.get_lyrics()['download_url']
+            have_lyrics = song.lyrics_info.has_available_text_lyrics
 
-            yield song_id, title, artists_id, link, lyrics
+            yield song_id, title, artists_id, link, have_lyrics
 
 
 def get_artist_albums(artist_id):

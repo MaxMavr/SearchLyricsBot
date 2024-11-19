@@ -33,11 +33,11 @@ async def process_raw_artists():
                 continue
             print(album_id, album_title, album_cover, album_data)
 
-            for song_id, song_title, song_artists, song_link, song_text in get_album_songs(album_id):
+            for song_id, song_title, song_artists, song_link, have_text in get_album_songs(album_id):
                 if songs.is_exists(song_id):
                     continue
-                songs.add(song_id, song_title, song_link, song_text)
-                print(song_id, song_title, song_artists, song_link, song_text)
+                songs.add(song_id, song_title, song_link, have_text)
+                print(song_id, song_title, song_artists, song_link, have_text)
 
                 for song_artist_id, song_artist_title in song_artists:
                     if not artists.is_exists(song_artist_id):

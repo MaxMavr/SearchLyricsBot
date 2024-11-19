@@ -13,14 +13,16 @@ def split_vector_id(vector_id: str) -> Tuple[str, int]:
     return song_id, line_id
 
 
-collection = client.get_collection(
-    name="collection_name",
-)
+try:
+    collection = client.get_collection(
+        name="collection_name",
+    )
 
-collection = client.create_collection(
-    name="collection_name",
-    metadata={"hnsw:space": "cosine"}
-)
+except InvalidCollectionException:
+    collection = client.create_collection(
+        name="collection_name",
+        metadata={"hnsw:space": "cosine"}
+    )
 
 collection.add(
     embeddings=vectors,
