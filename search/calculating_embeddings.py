@@ -14,9 +14,9 @@ async def line_to_embedding(line: str):
     line_embedding = __model.encode(line, device='cuda')
     reduce_embedding = __pca.fit_transform(line_embedding.reshape(32, 32))
 
-    short_embedding = np.array([i[0] for i in reduce_embedding])
+    compressed_embedding = np.array([i[0] for i in reduce_embedding])
 
-    return short_embedding
+    return compressed_embedding
 
 
 async def song_lines_to_embeddings(song_id: str, song_title: str, collection):

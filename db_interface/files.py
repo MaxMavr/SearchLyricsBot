@@ -4,7 +4,7 @@ from config.const import RAW_ARTISTS_FILE, ERR_ARTISTS_FILE, FEAT_ARTISTS_FILE
 
 def __is_file_exist(path2file: str) -> bool:
     if isfile(path2file):
-        return getsize(path2file) == 0
+        return getsize(path2file) != 0
     return False
 
 

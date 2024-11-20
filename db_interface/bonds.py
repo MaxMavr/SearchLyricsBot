@@ -25,10 +25,21 @@ def add(id_artist: str, id_album: str, id_song: str):
         conn.commit()
 
 
-def get_album_ids_by_artist(id_artist: str):
+def get_album_by_artist(id_artist: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT DISTINCT id_album FROM bonds WHERE id_artist = ?', (id_artist,))
+        cursor.execute('''SELECT * FROM albums WHERE id IN (
+                          SELECT DISTINCT id_album FROM bonds
+                          WHERE id_artist = ?)''', (id_artist,))
+        return cursor.fetchall()
+
+
+def get_song_by_album(id_album: str):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM songs WHERE id IN (
+                          SELECT DISTINCT id_song FROM bonds
+                          WHERE id_album = ?)''', (id_album,))
         return cursor.fetchall()
 
 

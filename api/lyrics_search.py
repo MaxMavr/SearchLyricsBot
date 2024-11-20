@@ -17,6 +17,7 @@ import db_interface.bonds as bonds
 
 
 def process_raw_artists():
+    print('Начал поиск')
     raw_artists = read_raw_artists_file()
     err_artists = []
     feat_artists = []
@@ -26,6 +27,8 @@ def process_raw_artists():
 
         if not artists.is_exists(artist_id):
             artists.add(artist_id, artist_title, True)
+        else:
+            artists.upd_take_status(artist_id, True)
         print(artist_id, artist_title)
 
         for album_id, album_title, album_cover, album_data in get_artist_albums(artist_id):
@@ -33,10 +36,10 @@ def process_raw_artists():
                 continue
             print('\t', album_id, album_title)
 
-            for song_id, song_title, song_artists, song_link, have_text in get_album_songs(album_id):
+            for song_id, song_title, song_artists, have_text in get_album_songs(album_id):
                 if songs.is_exists(song_id):
                     continue
-                songs.add(song_id, song_title, song_link, have_text)
+                songs.add(song_id, song_title, have_text)
                 print('\t\t', song_id, song_title, song_artists, have_text)
 
                 for song_artist_id, song_artist_title in song_artists:
@@ -48,29 +51,36 @@ def process_raw_artists():
 
             albums.add(album_id, album_title, album_cover, album_data)
 
-    clear_raw_artists_file()
+    # clear_raw_artists_file()
     upd_feat_artists_songs(feat_artists)
     upd_err_artists_songs(err_artists)
 
 
-# def clear_repeats():
-#     for song_id, song_title, _, have_text, _ in songs.get_with_text():
-#         repeats = songs.get_by_title(song_title)
+def compress_lines(lines: list) -> list:
+    compressed_lines = list(dict.fromkeys(lines))
+
+    two_lines = []
+    for ln in range(0, len(compressed_lines), 2):
+        two_lines.append(' '.join(compressed_lines[ln:ln + 2]))
+
+    return two_lines
 
 
-def get_song_lines(song_id):
+def get_song_lines(song_id: str):
     lyrics = get_song_lyrics(song_id)
-
-    lines = lyrics.split('\n')
-    lines = list(dict.fromkeys(lines))
-
-    two_lines = [lines[j:j + 2] for j in range(0, len(lines), 2)]
-
-    for line in two_lines:
-        clear_line = " ".join(line).strip()
+    lines = compress_lines(lyrics.split('\n'))
+    for line in lines:
+        clear_line = line.strip()
         if clear_line != '':
             yield clear_line
 
 
+def get_line_by_id(song_id: str, line_id: int) -> str:
+    lyrics = get_song_lyrics(song_id)
+    lines = compress_lines(lyrics.split('\n'))
+    return lines[line_id]
+
+
 if __name__ == "__main__":
     process_raw_artists()
+

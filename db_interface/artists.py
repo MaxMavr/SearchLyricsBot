@@ -36,11 +36,26 @@ def get(artist_id: str):
         return cursor.fetchone()
 
 
+def get_by_page(page_number: int, page_size: int = 20):
+    offset = (page_number - 1) * page_size
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM bonds LIMIT ? OFFSET ? WHERE take_songs = 1', (page_size, offset))
+        return cursor.fetchall()
+
+
 def is_exists(artist_id: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM artists WHERE id = ?', (artist_id,))
         return cursor.fetchone()[0] > 0
+
+
+def upd_take_status(artist_id: str, take_songs: bool):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE artists SET take_songs = ? WHERE id = ?', (take_songs, artist_id))
+        conn.commit()
 
 
 def count():

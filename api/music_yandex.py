@@ -5,7 +5,7 @@ from config.const import YANDEX_TOKEN
 __client = Client(YANDEX_TOKEN).init()
 
 
-def get_song_lyrics(song_id) -> str:
+def get_song_lyrics(song_id) -> Union[str, None]:
     song = __client.tracks(song_id)[0]
     if song.lyrics_info.has_available_text_lyrics:
         return song.get_lyrics().fetch_lyrics()
@@ -21,11 +21,10 @@ def get_album_songs(album_id):
             song_id = str(song.id)
             title = song.title
             artists_id = [(str(artist.id), artist.name) for artist in song.artists]
-            link = f'https://music.yandex.ru/album/{album_id}/track/{song_id}'
 
             have_lyrics = song.lyrics_info.has_available_text_lyrics
 
-            yield song_id, title, artists_id, link, have_lyrics
+            yield song_id, title, artists_id, have_lyrics
 
 
 def get_artist_albums(artist_id):

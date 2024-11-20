@@ -12,11 +12,6 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ContentType
 from aiogram.filters import CommandStart, Command, BaseFilter
 from aiogram.types import Message, CallbackQuery
-from aiogram.utils.keyboard import (ReplyKeyboardMarkup,
-                                    KeyboardButton,
-                                    InlineKeyboardMarkup,
-                                    InlineKeyboardButton,
-                                    InlineKeyboardBuilder)
 
 from config.secret_const import TELEGRAM_BOT_TOKEN as __TELEGRAM_BOT_TOKEN
 
