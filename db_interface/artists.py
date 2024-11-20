@@ -8,16 +8,17 @@ def __create():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS artists (
                 id TEXT PRIMARY KEY,
-                title TEXT NOT NULL
+                title TEXT NOT NULL,
+                take_songs BOOLEAN DEFAULT False
             )
         ''')
         conn.commit()
 
 
-def add(artist_id: str, title: str):
+def add(artist_id: str, title: str, take_songs: bool = False):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO artists (id, title) VALUES (?, ?)', (artist_id, title))
+        cursor.execute('INSERT INTO artists (id, title, take_songs) VALUES (?, ?, ?)', (artist_id, title, take_songs))
         conn.commit()
 
 
@@ -46,6 +47,13 @@ def count():
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM artists')
+        return cursor.fetchone()[0]
+
+
+def count_take_song():
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM artists WHERE take_songs = 1')
         return cursor.fetchone()[0]
 
 

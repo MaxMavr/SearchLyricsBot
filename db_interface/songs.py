@@ -3,6 +3,7 @@ from config.const import SONG_INFO_DB
 
 # ToDo: Проверка на переиздание песен (к альфа-версии)
 
+
 def __create():
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
@@ -10,8 +11,9 @@ def __create():
             CREATE TABLE IF NOT EXISTS songs (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
-                link TEXT,
-                have_text BOOLEAN
+                link TEXT NOT NULL,
+                have_text BOOLEAN NOT NULL,
+                embedded BOOLEAN NOT NULL DEFAULT False
             )
         ''')
         conn.commit()
@@ -36,6 +38,13 @@ def get(song_id: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM songs WHERE id = ?', (song_id,))
+        return cursor.fetchone()
+
+
+def get_by_title(song_title: str):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM songs WHERE title = ?', (song_title,))
         return cursor.fetchone()
 
 
@@ -64,6 +73,13 @@ def upd_text_status(song_id: str, have_text: bool):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE songs SET have_text = ? WHERE id = ?', (have_text, song_id))
+        conn.commit()
+
+
+def upd_vec_status(song_id: str, embedded: bool):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE songs SET embedded = ? WHERE id = ?', (embedded, song_id))
         conn.commit()
 
 
