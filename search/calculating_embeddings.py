@@ -1,12 +1,12 @@
 from config.embedding import *
-from config.const import EMBADDING_MODEL
+from config.const import EMBEDDING_MODEL
 
 from api.lyrics_search import get_song_lines
 from db_interface.songs import get_with_text, upd_vec_status
 from db_interface.vectors import make_vector_id
 
 
-__model = SentenceTransformer(EMBADDING_MODEL, device='cuda')
+__model = SentenceTransformer(EMBEDDING_MODEL, device='cuda')
 __pca = PCA(n_components=1)
 
 

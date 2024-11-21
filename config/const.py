@@ -29,4 +29,9 @@ MONTH_NAMES = ["января", "февраля", "марта", "апреля", "
 
 CHANNEL_ID = -1001914815060
 
-EMBADDING_MODEL = "ai-forever/ru-en-RoSBERTa"
+EMBEDDING_MODEL = "ai-forever/ru-en-RoSBERTa"
+
+ARTISTS_PAGE_SIZE = 20
+SONGS_PAGE_SIZE = 20
+ALBUMS_PAGE_SIZE = 20
+USERS_PAGE_SIZE = 20

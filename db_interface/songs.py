@@ -11,6 +11,7 @@ def __create():
             CREATE TABLE IF NOT EXISTS songs (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
+                number_in_album INTEGER NOT NULL,
                 have_text BOOLEAN NOT NULL,
                 embedded BOOLEAN NOT NULL DEFAULT False
             )
@@ -18,11 +19,11 @@ def __create():
         conn.commit()
 
 
-def add(song_id: str, title: str, have_text: bool):
+def add(song_id: str, title: str, number_in_album: int, have_text: bool):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO songs (id, title, have_text) VALUES (?, ?, ?)',
-                       (song_id, title, have_text))
+        cursor.execute('INSERT INTO songs (id, title, number_in_album, have_text) VALUES (?, ?, ?, ?)',
+                       (song_id, title, number_in_album, have_text))
         conn.commit()
 
 

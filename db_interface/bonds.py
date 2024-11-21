@@ -25,21 +25,23 @@ def add(id_artist: str, id_album: str, id_song: str):
         conn.commit()
 
 
-def get_album_by_artist(id_artist: str):
+def get_albums_by_artist_by_page(id_artist: str, page_number: int, page_size: int):
+    offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM albums WHERE id IN (
                           SELECT DISTINCT id_album FROM bonds
-                          WHERE id_artist = ?)''', (id_artist,))
+                          WHERE id_artist = ?) ORDER BY date DESC LIMIT ? OFFSET ?''', (id_artist, page_size, offset))
         return cursor.fetchall()
 
 
-def get_song_by_album(id_album: str):
+def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int):
+    offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM songs WHERE id IN (
                           SELECT DISTINCT id_song FROM bonds
-                          WHERE id_album = ?)''', (id_album,))
+                          WHERE id_album = ?) ORDER BY number_in_album DESC LIMIT ? OFFSET ?''', (id_album, page_size, offset))
         return cursor.fetchall()
 
 
@@ -64,33 +66,22 @@ def get_ids_by_song(id_song: str):
         return cursor.fetchall()
 
 
-# def get_by_page(page_number: int, page_size: int=20):
-#     offset = (page_number - 1) * page_size
-#     with sqlite3.connect(SONG_INFO_DB) as conn:
-#         cursor = conn.cursor()
-#         cursor.execute('SELECT * FROM bonds LIMIT ? OFFSET ?', (page_size, offset))
-#         return cursor.fetchall()
-
-
-def is_exists_artist(artist_id: str):
+def count_albums_by_artist(id_artist: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM bonds WHERE id_artist = ?', (artist_id,))
-        return cursor.fetchone()[0] > 0
+        cursor.execute('''SELECT COUNT(*) FROM albums WHERE id IN (
+                          SELECT DISTINCT id_album FROM bonds
+                          WHERE id_artist = ?)''', (id_artist,))
+        return cursor.fetchone()[0]
 
 
-def is_exists_album(album_id: str):
+def count_songs_by_album(id_album: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM bonds WHERE id_album = ?', (album_id,))
-        return cursor.fetchone()[0] > 0
-
-
-def is_exists_song(song_id: str):
-    with sqlite3.connect(SONG_INFO_DB) as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM bonds WHERE id_song = ?', (song_id,))
-        return cursor.fetchone()[0] > 0
+        cursor.execute('''SELECT COUNT(*) FROM songs WHERE id IN (
+                          SELECT DISTINCT id_song FROM bonds
+                          WHERE id_album = ?)''', (id_album,))
+        return cursor.fetchone()[0]
 
 
 __create()

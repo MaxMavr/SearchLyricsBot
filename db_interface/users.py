@@ -99,3 +99,6 @@ def is_baned(user_id: int) -> bool:
         cursor = conn.cursor()
         cursor.execute("SELECT status FROM users WHERE id = ?", (user_id,))
         return cursor.fetchone()[0] < 0
+
+
+__create()

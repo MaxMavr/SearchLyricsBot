@@ -36,10 +36,10 @@ def process_raw_artists():
                 continue
             print('\t', album_id, album_title)
 
-            for song_id, song_title, song_artists, have_text in get_album_songs(album_id):
+            for i, (song_id, song_title, song_artists, have_text) in enumerate(get_album_songs(album_id)):
                 if songs.is_exists(song_id):
                     continue
-                songs.add(song_id, song_title, have_text)
+                songs.add(song_id, song_title, i, have_text)
                 print('\t\t', song_id, song_title, song_artists, have_text)
 
                 for song_artist_id, song_artist_title in song_artists:

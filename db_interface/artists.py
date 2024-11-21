@@ -36,11 +36,19 @@ def get(artist_id: str):
         return cursor.fetchone()
 
 
-def get_by_page(page_number: int, page_size: int = 20):
+def get_title(artist_id: str):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT title FROM artists WHERE id = ?', (artist_id,))
+        return cursor.fetchone()[0]
+
+
+def get_by_page(page_number: int, page_size: int):
     offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM bonds LIMIT ? OFFSET ? WHERE take_songs = 1', (page_size, offset))
+        cursor.execute('SELECT * FROM artists ORDER BY (take_songs = 0), title ASC LIMIT ? OFFSET ?',
+                       (page_size, offset))
         return cursor.fetchall()
 
 
@@ -58,7 +66,7 @@ def upd_take_status(artist_id: str, take_songs: bool):
         conn.commit()
 
 
-def count():
+def count() -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM artists')

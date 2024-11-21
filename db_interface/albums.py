@@ -10,16 +10,16 @@ def __create():
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
                 img TEXT,
-                data TEXT
+                date TEXT
             )
         ''')
         conn.commit()
 
 
-def add(album_id: str, title: str, img: str, data: str):
+def add(album_id: str, title: str, img: str, date: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO albums (id, title, img, data) VALUES (?, ?, ?, ?)', (album_id, title, img, data))
+        cursor.execute('INSERT INTO albums (id, title, img, date) VALUES (?, ?, ?, ?)', (album_id, title, img, date))
         conn.commit()
 
 
