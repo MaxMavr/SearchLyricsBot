@@ -1,8 +1,7 @@
 {
   "cmd_start": "-----------------------------------",
   "cmd_help": "-----------------------------------",
-  "cmd_help": "-----------------------------------",
-  "cmd_about": "<i>Команда Phasalopedia. 18+\nИнформационные ресурсы взяты с Яндекс Музыки\n\n2024</i>",
+  "cmd_about": "<i>Команда Phasalopedia. 18+\n\nИнформационные ресурсы взяты с Яндекс Музыки\n\n2024</i>",
 
   "stat_ban": [
   "",
@@ -11,6 +10,12 @@
   "",
   ""
   ],
+
+  "agreement": "-----------------------------------",
+  "admitted": "-----------------------------------",
+  "save_day_song": "✅ Установил песню дня",
+  "publish_post": "Опубликовал \uD83D\uDE3D",
+  "suggest_post": "Отправил админу, надеюсь примет \uD83D\uDE09",
 
   "title_artists": "<b>Исполнители</b>\n\n",
   "title_album": "<b>Альбомы</b>\n",
@@ -33,6 +38,14 @@
   "button_show_ids_True": "\uD83C\uDD94 Показать id",
   "button_show_ids_False": "\uD83C\uDD94 Скрыть id",
 
+  "button_suggest_post": "\uD83E\uDE84 Предложить пост",
+  "button_publish_post": "✅ Опубликовать",
+
+  "button_admitted": "✅ Принять соглашение",
+  "button_read_admitted": "\uD83D\uDCC4 Читать",
+  "button_main_artists": "Исполнители",
+
+
 
   "": "",
   "": "",
@@ -40,12 +53,16 @@
   "": "",
 
 
-  "err_empty_argument": "⚠️ Ты не передал аргумент команды",
-  "err_not_digit": "⚠️ Аргумент команды не число",
+  "err_empty_argument":         "⚠️ Ты не передал аргумент команды",
+  "err_empty_newline_argument": "⚠️ Ты не передал аргумент команды, нужно передавать с нового строки",
+  "err_lot_of_arguments_3":     "⚠️ Ты передал очень много аргументов, максимум три штуки",
+  "err_not_digit":              "⚠️ Аргумент команды не число",
+  "err_is_not_link":            "⚠️ Нужно передать ссылку",
+  "err_is_not_yandex_link":     "⚠️ Нужнa ссылка на Яндекс Музыку",
 
-  "err_artist_not_exist": "⚠️ Исполнителя не существует",
-  "err_album_not_exist": "⚠️ Альбома не существует",
-  "err_song_not_exist": "⚠️ Песни не существует",
+  "err_artist_not_exist":       "⚠️ Исполнителя не существует",
+  "err_album_not_exist":        "⚠️ Альбома не существует",
+  "err_song_not_exist":         "⚠️ Песни не существует",
 
 
   "icon_select": "➡️ ",

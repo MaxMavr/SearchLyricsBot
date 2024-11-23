@@ -1,19 +1,39 @@
 from config.kb import *
 from config.const import (ARTISTS_PAGE_SIZE,
-                          SONGS_PAGE_SIZE,
-                          ALBUMS_PAGE_SIZE,
+                          ARTIST_PAGE_SIZE,
+                          ALBUM_PAGE_SIZE,
+                          SONG_PAGE_SIZE,
                           USERS_PAGE_SIZE)
 
 
-main = KMarkup(keyboard=[[KButton(text='Исполнители')]],
+main = KMarkup(keyboard=[[KButton(text=phrases['button_main_artists'])]],
                resize_keyboard=True,
                input_field_placeholder=phrases['placeholder_appeal'])
+
+
+publish_post = IMarkup(inline_keyboard=[[IButton(text=phrases['button_publish_post'], callback_data='publish_post')]])
+
+suggest_post = IMarkup(inline_keyboard=[[IButton(text=phrases['button_suggest_post'], callback_data='suggest_post')]])
 
 
 def __make_page_button(content: Tuple[str, str] = None):
     if not content:
         return IButton(text=phrases['icon_empty'], callback_data='pass')
     return IButton(text=content[0], callback_data=content[1])
+
+
+def __make_past_next_page(page_number: int, max_page_number: int, suffix_call: str, parent_id, select_number):
+    if page_number <= 1:
+        past_page = None
+    else:
+        number = select_number - ARTISTS_PAGE_SIZE - (select_number % ARTISTS_PAGE_SIZE) + 1
+        past_page = (phrases['button_past_page'], f'pg_{suffix_call}_{parent_id}_{number}_{show_ids}')
+
+    if page_number >= max_page_number:
+        next_page = None
+    else:
+        number = select_number + ARTISTS_PAGE_SIZE - (select_number % ARTISTS_PAGE_SIZE) + 1
+        next_page = (phrases['button_next_page'], f'pg_{suffix_call}_{parent_id}_{number}_{show_ids}')
 
 
 def make_artists_and_artist(select_number: int, max_select: int,
@@ -47,22 +67,10 @@ def make_artists_and_artist(select_number: int, max_select: int,
             [__make_page_button(next_item)]
         ])
 
-    if page_number <= 1:
-        past_page = None
-    else:
-        number = select_number - ARTISTS_PAGE_SIZE - (select_number % ARTISTS_PAGE_SIZE) + 1
-        past_page = (phrases['button_past_page'], f'pg_{suffix_call}_{parent_id}_{number}_{show_ids}')
-
-    if page_number >= max_page:
-        next_page = None
-    else:
-        number = select_number + ARTISTS_PAGE_SIZE - (select_number % ARTISTS_PAGE_SIZE) + 1
-        next_page = (phrases['button_next_page'], f'pg_{suffix_call}_{parent_id}_{number}_{show_ids}')
-
     return IMarkup(inline_keyboard=[
         [__make_page_button(past_item)],
         [__make_page_button(past_page), __make_page_button(next_page)],
-        [__make_page_button(detail_show_ids), __make_page_button(child)],
+        [__make_page_button(None), __make_page_button(detail_show_ids), __make_page_button(child)],
         [__make_page_button(next_item)]
     ])
 

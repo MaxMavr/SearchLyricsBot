@@ -9,9 +9,9 @@ def __create():
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY NOT NULL,
                 username TEXT NOT NULL DEFAULT 'username',
-                status INTEGER CHECK (status IN (-1, 0, 1)) NOT NULL DEFAULT 0
+                status INTEGER CHECK (status IN (-2 -1, 0, 1)) NOT NULL DEFAULT 0
             )
-        ''')  # status Забанен Обычный Админ
+        ''')  # status Не зарегистрирован, Забанен, Обычный, Админ
         cursor.close()
 
 
@@ -54,20 +54,22 @@ def get_username(user_id: int) -> str:
         return cursor.fetchone()[0]
 
 
+def admit(user_id: int):
+    __upd_status(user_id, 0)
+
+
 def promote(user_id: int):
     __upd_status(user_id, 1)
 
 
-def demote(user_id: int):
-    __upd_status(user_id, 0)
+demote = admit
 
 
 def ban(user_id: int):
     __upd_status(user_id, -1)
 
 
-def unban(user_id: int):
-    __upd_status(user_id, 0)
+unban = admit
 
 
 def __upd_status(user_id: int, status: int):
@@ -87,18 +89,25 @@ def is_exists(user_id: int) -> bool:
         return cursor.fetchone()[0] > 0
 
 
+def is_admitted(user_id: int) -> bool:
+    with sqlite3.connect(USERS_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT status FROM users WHERE id = ?", (user_id,))
+        return cursor.fetchone()[0] == 0
+
+
 def is_admin(user_id: int) -> bool:
     with sqlite3.connect(USERS_DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT status FROM users WHERE id = ?", (user_id,))
-        return cursor.fetchone()[0] > 0
+        return cursor.fetchone()[0] == 1
 
 
 def is_baned(user_id: int) -> bool:
     with sqlite3.connect(USERS_DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT status FROM users WHERE id = ?", (user_id,))
-        return cursor.fetchone()[0] < 0
+        return cursor.fetchone()[0] == -1
 
 
 __create()

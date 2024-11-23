@@ -52,10 +52,7 @@ async def cmd_artist(message: Message):
 async def catch_goto_page(callback: CallbackQuery):
     _, type_of_page, id_of_page, select_number, show_ids = callback.data.split('_')
 
-    print(f'pg_ {type_of_page = }')
-    print(f'pg_ {id_of_page = }')
-    print(f'pg_ {select_number = }')
-    print(f'pg_ {show_ids = }')
+    print(callback.data)
 
     if type_of_page == 'arts':
         await make_artists_page(callback, select_number=int(select_number),

@@ -10,6 +10,7 @@ ARTISTS_DIR = __DB_DIR + '/artists'
 RAW_ARTISTS_FILE = __DB_DIR + '/raw_artists.json'
 FEAT_ARTISTS_FILE = __DB_DIR + '/feat_artists.json'
 ERR_ARTISTS_FILE = __DB_DIR + '/err_artists.json'
+DAY_SONG_FILE = __DB_DIR + '/day_song.json'
 
 SONG_INFO_DB = __DB_DIR + '/song_info.db'
 NODES_DB = __DB_DIR + '/nodes.db'
@@ -24,14 +25,26 @@ PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
 # GENIUS_SEARCH_URL = GENIUS_API_MAIN_URL + "/search"
 # GENIUS_LYRICS_CONTAINER = "Lyrics__Container-sc-1ynbvzw-1 kUgSbL"
 
-MONTH_NAMES = ["января", "февраля", "марта", "апреля", "мая", "июня",
-               "июля", "августа", "сентября", "октября", "ноября", "декабря"]
+MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
-CHANNEL_ID = -1001914815060
+
+ARTISTS_PAGE_SIZE = 20
+ARTIST_PAGE_SIZE = 20
+ALBUM_PAGE_SIZE = 20
+SONG_PAGE_SIZE = 20
+
+USERS_PAGE_SIZE = 20
+
 
 EMBEDDING_MODEL = "ai-forever/ru-en-RoSBERTa"
 
-ARTISTS_PAGE_SIZE = 20
-SONGS_PAGE_SIZE = 20
-ALBUMS_PAGE_SIZE = 20
-USERS_PAGE_SIZE = 20
+
+YANDEX_LINK_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/\d+'
+YANDEX_SONG_ID_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/(\d+)'
+LINK_PATTERN = r'https://'
+
+
+# Настоящий -1001914815060
+# Тестовый -1002070355602
+CHANNEL_ID = -1002070355602
+MAIN_ADMIN_ID = 735273809

@@ -1,59 +1,32 @@
-
-
-def make_artist_song_lyrics_message(
-        lines: str,
-        artist: str,
-        song: str,
-        link: str):
-
-    msg = f'<i>«{lines}»</i>\n\n<a href="{link}">{artist} — {song}</a>'
-
-    return msg
+def make_yandex_link(song_id: str, album_id: str) -> str:
+    return f'https://music.yandex.ru/album/{album_id}/track/{song_id}'
 
 
 def make_song_lyrics_message(
-        lines: str):
+        artist_song: str = None,
+        song: str = None,
+        artist: str = None,
+        link: str = None,
+        lines: str = None):
 
-    msg = f'<i>«{lines}»</i>'
+    msg = ''
+    if lines:
+        msg += f'<i>«{lines}»</i>\n\n'
 
-    return msg
+    if link:
+        msg += f'<a href="{link}">'
 
+    if artist_song:
+        msg += artist_song
 
-def make_artist_message(
-        artist: str,
-        albums: list[str]):
+    else:
+        if artist:
+            msg += f'{artist} — '
 
-    msg = f'<b>{artist}</b>\nАльбомы\n\n'
+        if song:
+            msg += song
 
-    for s in albums:
-        msg += f'{s}\n'
-
-    return msg
-
-
-def make_album_message(
-        artist: str,
-        album: str,
-        songs: list[str]):
-
-    msg = f'<b>{artist} — {album}</b>\n\n'
-
-    for s in songs:
-        msg += f'{s}\n'
+    if link:
+        msg += '</a>'
 
     return msg
-
-
-def make_artists_message(
-        artists: list[str]):
-
-    msg = f'<b>Исполнители</b>\n\n'
-
-    for s in artists:
-        msg += f'{s}\n'
-
-    return msg
-
-
-if __name__ == "__main__":
-    pass

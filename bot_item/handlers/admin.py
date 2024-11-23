@@ -10,6 +10,3 @@ rt: Router = Router()
 #  Команда /... — Забрать song_info.db
 #  Команда /... — обновить song_info.db
 #
-#
-
-

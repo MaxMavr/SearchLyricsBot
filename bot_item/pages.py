@@ -3,8 +3,9 @@
 
 from config.const import (MONTH_NAMES,
                           ARTISTS_PAGE_SIZE,
-                          SONGS_PAGE_SIZE,
-                          ALBUMS_PAGE_SIZE,
+                          ALBUM_PAGE_SIZE,
+                          ARTIST_PAGE_SIZE,
+                          SONG_PAGE_SIZE,
                           USERS_PAGE_SIZE)
 from config.bot import *
 
@@ -97,18 +98,18 @@ async def make_artist_page(event: Union[Message, CallbackQuery],
                            show_ids: bool = False):
     await __init_page(event)
 
-    relative_select_number = (select_number - 1) % ALBUMS_PAGE_SIZE
+    relative_select_number = (select_number - 1) % ALBUM_PAGE_SIZE
 
-    page_number = __calculate_page(select_number, ALBUMS_PAGE_SIZE)
-    page = bonds.get_albums_by_artist_by_page(artist_id, page_number, ALBUMS_PAGE_SIZE)
+    page_number = __calculate_page(select_number, ALBUM_PAGE_SIZE)
+    page = bonds.get_albums_by_artist_by_page(artist_id, page_number, ALBUM_PAGE_SIZE)
 
     quantity_album = bonds.count_albums_by_artist(artist_id)
-    max_page_number = __calculate_page(quantity_album, ALBUMS_PAGE_SIZE)
+    max_page_number = __calculate_page(quantity_album, ALBUM_PAGE_SIZE)
 
     page_text = phrases['title_album']
     page_text += f'{artists.get_title(artist_id)}\n\n'
 
-    for i in range(ALBUMS_PAGE_SIZE):
+    for i in range(ALBUM_PAGE_SIZE):
         if i < len(page):
             album_id, album_title, _, _ = page[i]
             if i == relative_select_number:

@@ -1,13 +1,13 @@
 from config.net import asyncio
 
-from db_interface.files import (read_raw_artists_file,
-                                clear_raw_artists_file,
-                                upd_feat_artists_songs,
-                                upd_err_artists_songs)
+from db_interface.files import (read_raw_artists,
+                                clear_raw_artists,
+                                upd_feat_artists,
+                                upd_err_artists)
 
 from api.music_yandex import (get_album_songs,
                               get_artist_albums,
-                              get_artist_id,
+                              search_artist_id,
                               get_song_lyrics)
 
 import db_interface.artists as artists
@@ -17,13 +17,12 @@ import db_interface.bonds as bonds
 
 
 def process_raw_artists():
-    print('Начал поиск')
-    raw_artists = read_raw_artists_file()
+    raw_artists = read_raw_artists()
     err_artists = []
     feat_artists = []
 
     for raw_artist in raw_artists:
-        artist_id, artist_title = get_artist_id(raw_artist)
+        artist_id, artist_title = search_artist_id(raw_artist)
 
         if not artists.is_exists(artist_id):
             artists.add(artist_id, artist_title, True)
@@ -51,9 +50,9 @@ def process_raw_artists():
 
             albums.add(album_id, album_title, album_cover, album_data)
 
-    # clear_raw_artists_file()
-    upd_feat_artists_songs(feat_artists)
-    upd_err_artists_songs(err_artists)
+    # clear_raw_artists()
+    upd_feat_artists(feat_artists)
+    upd_err_artists(err_artists)
 
 
 def compress_lines(lines: list) -> list:

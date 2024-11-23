@@ -1,10 +1,11 @@
 from os.path  import dirname, isfile
 from os       import listdir, remove, makedirs, getenv
-from re       import findall, DOTALL
+from re       import search
 from math     import ceil
 from typing   import Union, List, Tuple
 from datetime import datetime
 from random import randint
+from itertools import groupby
 
 import asyncio
 import aiogram
@@ -14,7 +15,7 @@ from aiogram.filters import CommandStart, Command, BaseFilter
 from aiogram.types import Message, CallbackQuery
 
 from config.secret_const import TELEGRAM_BOT_TOKEN as __TELEGRAM_BOT_TOKEN
-from config.secret_const import MAIN_ADMIN_ID
+from config.const import MAIN_ADMIN_ID, CHANNEL_ID, YANDEX_LINK_PATTERN, YANDEX_SONG_ID_PATTERN, LINK_PATTERN
 
 import db_interface.users as users
 import db_interface.artists as artists
@@ -23,6 +24,8 @@ import db_interface.songs as songs
 import db_interface.bonds as bonds
 
 import bot_item.keyboards as kb
+from api.music_yandex import get_day_song, set_day_song, get_song_artist_title
+from bot_item.make_message import *
 from config.phrases import phrases
 
 try:
@@ -30,6 +33,31 @@ try:
 except Exception:
     from aiogram.client.default import DefaultBotProperties
     bot: Bot = Bot(token=__TELEGRAM_BOT_TOKEN, default=DefaultBotProperties(parse_mode='HTML'))
+
+
+async def get_editors():
+    return [editor.user.id
+            for editor in
+            (await bot.get_chat_administrators(chat_id=CHANNEL_ID))
+            if not editor.user.is_bot]
+
+
+class IsEditor(BaseFilter):
+    @staticmethod
+    async def check(user_id) -> bool:
+        return user_id in (await get_editors())
+
+    async def __call__(self, message: Message) -> bool:
+        return await self.check(message.from_user.id)
+
+
+class IsAdmitted(BaseFilter):
+    @staticmethod
+    async def check(user_id: int) -> bool:
+        return users.is_admitted(user_id)
+
+    async def __call__(self, message: Message) -> bool:
+        return await self.check(message.from_user.id)
 
 
 class IsBaned(BaseFilter):
@@ -69,16 +97,25 @@ async def sent_to_banned(message: Message):
 
 
 async def get_cmd_args(message: Message) -> list:
-    return message.text.split()[1:] or [None]
+    args = message.text.split()[1:]
+    if len(args) == 0:
+        await message.answer(phrases['err_empty_argument'])
+        return [None]
+    return args
+
+
+async def get_cmd_args_by_newline(message: Message) -> list:
+    args = message.text.split('\n')[1:]
+    if len(args) == 0:
+        await message.answer(phrases['err_empty_newline_argument'])
+        return [None]
+    return args
 
 
 async def get_cmd_digit(message: Message) -> int:
-    digit = await get_cmd_args(message)
+    digit = (await get_cmd_args(message))[0]
 
-    digit = digit[0]
-
-    if digit is None:
-        await message.answer(phrases['err_empty_argument'])
+    if not digit:
         return -1
 
     if not digit.isdigit():
@@ -102,11 +139,9 @@ async def get_cmd_user_id(message: Message) -> int:
 
 
 async def get_cmd_artist_id(message: Message) -> str:
-    artist_id = await get_cmd_args(message)
-    artist_id = artist_id[0]
+    artist_id = (await get_cmd_args(message))[0]
 
-    if artist_id is None:
-        await message.answer(phrases['err_empty_argument'])
+    if not artist_id:
         return ''
 
     if not artists.is_exists(artist_id):
@@ -117,11 +152,9 @@ async def get_cmd_artist_id(message: Message) -> str:
 
 
 async def get_cmd_album_id(message: Message) -> str:
-    album_id = await get_cmd_args(message)
-    album_id = album_id[0]
+    album_id = (await get_cmd_args(message))[0]
 
-    if album_id is None:
-        await message.answer(phrases['err_empty_argument'])
+    if not album_id:
         return ''
 
     if not albums.is_exists(album_id):
@@ -132,11 +165,9 @@ async def get_cmd_album_id(message: Message) -> str:
 
 
 async def get_cmd_song_id(message: Message) -> str:
-    song_id = await get_cmd_args(message)
-    song_id = song_id[0]
+    song_id = (await get_cmd_args(message))[0]
 
-    if song_id is None:
-        await message.answer(phrases['err_empty_argument'])
+    if not song_id:
         return ''
 
     if not songs.is_exists(song_id):
@@ -146,5 +177,25 @@ async def get_cmd_song_id(message: Message) -> str:
     return song_id
 
 
+async def get_cmd_id_from_yandex_link(message: Message) -> tuple:
+    link = (await get_cmd_args(message))[0]
+
+    if not await is_link(link):
+        await message.answer(phrases['err_is_not_link'])
+        return None, None
+
+    if not await is_yandex_link(link):
+        await message.answer(phrases['err_is_not_yandex_link'])
+        return None, None
+
+    album_id, _, song_id = link.split('/')[-3:]
+
+    return album_id, song_id
 
 
+async def is_yandex_link(link: str) -> bool:
+    return bool(search(YANDEX_LINK_PATTERN, link))
+
+
+async def is_link(link: str) -> bool:
+    return link.startswith(LINK_PATTERN)
