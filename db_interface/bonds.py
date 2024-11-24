@@ -45,6 +45,24 @@ def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int):
         return cursor.fetchall()
 
 
+def get_albums_by_artist_by_select_number(id_artist: str, select_number: int):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM albums WHERE id IN (
+                          SELECT DISTINCT id_album FROM bonds
+                          WHERE id_artist = ?) ORDER BY date DESC LIMIT 1 OFFSET ?''', (id_artist, select_number))
+        return cursor.fetchone()
+
+
+def get_songs_by_album_by_select_number(id_album: str, select_number: int):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM songs WHERE id IN (
+                          SELECT DISTINCT id_song FROM bonds
+                          WHERE id_album = ?) ORDER BY number_in_album DESC LIMIT 1 OFFSET ?''', (id_album, select_number))
+        return cursor.fetchone()
+
+
 def get_ids_by_artist(id_artist: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()

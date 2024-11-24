@@ -1,5 +1,5 @@
 from config.net import *
-from config.const import YANDEX_TOKEN
+from config.const import YANDEX_TOKEN, TEMP_DIR
 from db_interface.files import (read_day_song,
                                 upd_day_song)
 
@@ -55,13 +55,20 @@ def search_artist_id(artist_title: str) -> Tuple[str, str]:
     return '', ''
 
 
+def download_song(song_id: str, username: str) -> str:
+    song = __client.tracks(song_id)[0]
+    save_path = TEMP_DIR + f'{username}-{song.id}.mp3'
+    song.fetch_track().download(save_path)
+    return save_path
+
+
 def get_day_song() -> Optional[Tuple[str, str, str, str]]:
+    return read_day_song()
     # queue_id = __client.queues_list()[0].id
     # queue = __client.queue(queue_id)
 
     # if len(queue.tracks) <= 0:
     #     return read_day_song()
-    return read_day_song()
 
     # song_id = queue.get_current_track()
     # song = song_id.fetch_track()
@@ -77,4 +84,3 @@ def set_day_song(album_id: str, song_id: str):
     artists_title = ', '.join(artist.name for artist in song.artists)
 
     upd_day_song([song.title, song_id, artists_title, album_id])
-

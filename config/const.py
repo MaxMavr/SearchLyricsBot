@@ -4,6 +4,7 @@ from config.secret_const import YANDEX_TOKEN
 
 __MAIN_DIR = f'{dirname(__file__)}/../'
 __CONFIG_DIR = f'{dirname(__file__)}/'
+TEMP_DIR = __MAIN_DIR + '/temp'
 __DB_DIR = __MAIN_DIR + '/DB'
 
 ARTISTS_DIR = __DB_DIR + '/artists'
@@ -18,6 +19,7 @@ VECTORS_DB = __DB_DIR + '/vectors.vdb'
 USERS_DB = __DB_DIR + '/users.db'
 
 PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
+IMG_NULL_FILE = __MAIN_DIR + '/assets/null.png'
 
 # GENIUS_HEADERS = {'Authorization': f'Bearer {__GENIUS_TOKEN}'}
 # GENIUS_API_MAIN_URL = "http://api.genius.com"
@@ -28,9 +30,9 @@ PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
 MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
 
-ARTISTS_PAGE_SIZE = 20
+ARTISTS_PAGE_SIZE = 10
 ARTIST_PAGE_SIZE = 20
-ALBUM_PAGE_SIZE = 20
+ALBUM_PAGE_SIZE = 10
 SONG_PAGE_SIZE = 20
 
 USERS_PAGE_SIZE = 20

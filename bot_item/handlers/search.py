@@ -1,5 +1,5 @@
 from config.bot import *
-from bot_item.pages import make_artists_page, make_artist_page
+from bot_item.pages import make_artists_page, make_artist_page, make_album_page
 rt: Router = Router()
 
 # TODO:
@@ -13,12 +13,12 @@ rt: Router = Router()
 
 @rt.message(F.text.lower() == 'исполнители')
 async def catch_artists(message: Message):
-    await make_artists_page(message, select_number=1)
+    await make_artists_page(event=message, select_vector=(1, 1, 1))
 
 
 @rt.message(Command(commands='artists'))  # /artists
 async def cmd_artists(message: Message):
-    await make_artists_page(message, select_number=1)
+    await make_artists_page(event=message, select_vector=(1, 1, 1))
 
 
 @rt.message(Command(commands='artist'))  # /artist
@@ -48,21 +48,17 @@ async def cmd_artist(message: Message):
 #     await make_song_page(message, song_id, select_number=1)
 
 
-@rt.callback_query(F.data.startswith('pg_'))
-async def catch_goto_page(callback: CallbackQuery):
-    _, type_of_page, id_of_page, select_number, show_ids = callback.data.split('_')
+@rt.callback_query(F.data.startswith('pageSI_'))
+async def catch_goto_page_song_info(callback: CallbackQuery):
+    type_of_page, show_ids, select_vector = decoding_page_callback(callback.data)
 
     print(callback.data)
 
-    if type_of_page == 'arts':
-        await make_artists_page(callback, select_number=int(select_number),
-                                show_ids=show_ids == 'True')
-    elif type_of_page == 'art':
-        await make_artist_page(callback, artist_id=id_of_page, select_number=int(select_number),
-                               show_ids=show_ids == 'True')
-    # elif type_of_page == 'al':
-    #     await make_album_page(callback, album_id=id_of_page, select_number=int(select_number),
-    #                           show_ids=show_ids == 'True')
-    # elif type_of_page == 'sng':
-    #     await make_song_page(callback, song_id=id_of_page, select_number=int(select_number),
-    #                          show_ids=show_ids == 'True')
+    if type_of_page == 'A':
+        await make_artists_page(callback, select_vector, show_ids)
+    elif type_of_page == 'a':
+        await make_artist_page(callback, select_vector, show_ids)
+    elif type_of_page == 'l':
+        await make_album_page(callback, select_vector, show_ids)
+    # elif type_of_page == 's':
+    #     await make_song_page(callback, select_vector, show_ids)

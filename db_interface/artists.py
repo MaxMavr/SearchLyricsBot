@@ -52,6 +52,14 @@ def get_by_page(page_number: int, page_size: int):
         return cursor.fetchall()
 
 
+def get_by_select_number(select_number: int):
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM artists ORDER BY (take_songs = 0), title ASC LIMIT 1 OFFSET ?',
+                       (select_number,))
+        return cursor.fetchone()
+
+
 def is_exists(artist_id: str):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()

@@ -2,7 +2,7 @@ from os.path  import dirname, isfile
 from os       import listdir, remove, makedirs, getenv
 from re       import search
 from math     import ceil
-from typing   import Union, List, Tuple
+from typing   import Union, List, Tuple, Callable, Coroutine
 from datetime import datetime
 from random import randint
 from itertools import groupby
@@ -12,7 +12,8 @@ import aiogram
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ContentType
 from aiogram.filters import CommandStart, Command, BaseFilter
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto
+
 
 from config.secret_const import TELEGRAM_BOT_TOKEN as __TELEGRAM_BOT_TOKEN
 from config.const import MAIN_ADMIN_ID, CHANNEL_ID, YANDEX_LINK_PATTERN, YANDEX_SONG_ID_PATTERN, LINK_PATTERN
@@ -24,6 +25,7 @@ import db_interface.songs as songs
 import db_interface.bonds as bonds
 
 import bot_item.keyboards as kb
+from bot_item.keyboards import decoding_page_callback
 from api.music_yandex import get_day_song, set_day_song, get_song_artist_title
 from bot_item.make_message import *
 from config.phrases import phrases
@@ -99,7 +101,7 @@ async def sent_to_banned(message: Message):
 async def get_cmd_args(message: Message) -> list:
     args = message.text.split()[1:]
     if len(args) == 0:
-        await message.answer(phrases['err_empty_argument'])
+        await message.answer(phrases['err_empty_argument'], reply_markup=kb.main)
         return [None]
     return args
 
@@ -107,7 +109,7 @@ async def get_cmd_args(message: Message) -> list:
 async def get_cmd_args_by_newline(message: Message) -> list:
     args = message.text.split('\n')[1:]
     if len(args) == 0:
-        await message.answer(phrases['err_empty_newline_argument'])
+        await message.answer(phrases['err_empty_newline_argument'], reply_markup=kb.main)
         return [None]
     return args
 
@@ -119,7 +121,7 @@ async def get_cmd_digit(message: Message) -> int:
         return -1
 
     if not digit.isdigit():
-        await message.answer(phrases['err_not_digit'])
+        await message.answer(phrases['err_not_digit'], reply_markup=kb.main)
         return -1
 
     return int(digit)
@@ -132,7 +134,7 @@ async def get_cmd_user_id(message: Message) -> int:
         return -1
 
     if not users.is_exists(user_id):
-        await message.answer(phrases['err_user_not_exist'])
+        await message.answer(phrases['err_user_not_exist'], reply_markup=kb.main)
         return -1
 
     return user_id
@@ -145,7 +147,7 @@ async def get_cmd_artist_id(message: Message) -> str:
         return ''
 
     if not artists.is_exists(artist_id):
-        await message.answer(phrases['err_artist_not_exist'])
+        await message.answer(phrases['err_artist_not_exist'], reply_markup=kb.main)
         return ''
 
     return artist_id
@@ -158,7 +160,7 @@ async def get_cmd_album_id(message: Message) -> str:
         return ''
 
     if not albums.is_exists(album_id):
-        await message.answer(phrases['err_album_not_exist'])
+        await message.answer(phrases['err_album_not_exist'], reply_markup=kb.main)
         return ''
 
     return album_id
@@ -171,7 +173,7 @@ async def get_cmd_song_id(message: Message) -> str:
         return ''
 
     if not songs.is_exists(song_id):
-        await message.answer(phrases['err_song_not_exist'])
+        await message.answer(phrases['err_song_not_exist'], reply_markup=kb.main)
         return ''
 
     return song_id
@@ -181,11 +183,11 @@ async def get_cmd_id_from_yandex_link(message: Message) -> tuple:
     link = (await get_cmd_args(message))[0]
 
     if not await is_link(link):
-        await message.answer(phrases['err_is_not_link'])
+        await message.answer(phrases['err_is_not_link'], reply_markup=kb.main)
         return None, None
 
     if not await is_yandex_link(link):
-        await message.answer(phrases['err_is_not_yandex_link'])
+        await message.answer(phrases['err_is_not_yandex_link'], reply_markup=kb.main)
         return None, None
 
     album_id, _, song_id = link.split('/')[-3:]

@@ -2,7 +2,7 @@ from config.embedding import *
 from config.const import EMBEDDING_MODEL
 
 from api.lyrics_search import get_song_lines
-from db_interface.songs import get_with_text, upd_vec_status
+from db_interface.songs import get_for_embedded, upd_embed_status
 from db_interface.vectors import make_vector_id
 
 
@@ -52,11 +52,11 @@ async def main():
             metadata={"hnsw:space": "cosine"}
         )
 
-    for song_id, song_title, _, _, embedded in get_with_text():
+    for song_id, song_title, _, _, embedded in get_for_embedded():
         if embedded:
             continue
         await song_lines_to_embeddings(song_id, song_title, collection)
-        upd_vec_status(song_id, True)
+        upd_embed_status(song_id, True)
 
 
 if __name__ == "__main__":
