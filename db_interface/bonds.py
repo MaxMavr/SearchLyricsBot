@@ -45,7 +45,7 @@ def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int):
         return cursor.fetchall()
 
 
-def get_albums_by_artist_by_select_number(id_artist: str, select_number: int):
+def get_albums_by_artist_select_number(id_artist: str, select_number: int):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM albums WHERE id IN (
@@ -54,7 +54,7 @@ def get_albums_by_artist_by_select_number(id_artist: str, select_number: int):
         return cursor.fetchone()
 
 
-def get_songs_by_album_by_select_number(id_album: str, select_number: int):
+def get_songs_by_album_select_number(id_album: str, select_number: int):
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM songs WHERE id IN (

@@ -12,7 +12,7 @@ import aiogram
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ContentType
 from aiogram.filters import CommandStart, Command, BaseFilter
-from aiogram.types import Message, CallbackQuery, InputMediaPhoto
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto, InputMediaAudio
 
 
 from config.secret_const import TELEGRAM_BOT_TOKEN as __TELEGRAM_BOT_TOKEN
@@ -26,7 +26,12 @@ import db_interface.bonds as bonds
 
 import bot_item.keyboards as kb
 from bot_item.keyboards import decoding_page_callback
-from api.music_yandex import get_day_song, set_day_song, get_song_artist_title
+from api.music_yandex import (get_day_song,
+                              get_song_artist_title_by_song_id,
+                              get_artist_title_by_album_id,
+                              get_artist_title_by_song_id,
+                              download_song,
+                              get_song_lyrics)
 from bot_item.make_message import *
 from config.phrases import phrases
 
@@ -53,10 +58,10 @@ class IsEditor(BaseFilter):
         return await self.check(message.from_user.id)
 
 
-class IsAdmitted(BaseFilter):
+class IsNotAdmitted(BaseFilter):
     @staticmethod
     async def check(user_id: int) -> bool:
-        return users.is_admitted(user_id)
+        return not users.is_admitted(user_id)
 
     async def __call__(self, message: Message) -> bool:
         return await self.check(message.from_user.id)
@@ -95,7 +100,12 @@ class IsSuperAdmin(BaseFilter):
 
 async def sent_to_banned(message: Message):
     await message.answer(
-        phrases["ban"][randint(0, len(phrases["ban"]) - 1)])
+        phrases["stat_ban"][randint(0, len(phrases["stat_ban"]) - 1)])
+
+
+async def sent_to_not_admitted(message: Message):
+    await message.answer(
+        phrases["stat_not_admit"][randint(0, len(phrases["stat_not_admit"]) - 1)])
 
 
 async def get_cmd_args(message: Message) -> list:

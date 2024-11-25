@@ -22,7 +22,7 @@ def process_raw_artists():
     feat_artists = []
 
     for raw_artist in raw_artists:
-        artist_id, artist_title = search_artist_id(raw_artist)
+        artist_id, artist_title = await search_artist_id(raw_artist)
 
         if not artists.is_exists(artist_id):
             artists.add(artist_id, artist_title, True)
@@ -30,12 +30,12 @@ def process_raw_artists():
             artists.upd_take_status(artist_id, True)
         print(artist_id, artist_title)
 
-        for album_id, album_title, album_cover, album_data in get_artist_albums(artist_id):
+        for album_id, album_title, album_cover, album_data in await get_artist_albums(artist_id):
             if albums.is_exists(album_id):
                 continue
             print('\t', album_id, album_title)
 
-            for i, (song_id, song_title, song_artists, have_text) in enumerate(get_album_songs(album_id)):
+            for i, (song_id, song_title, song_artists, have_text) in enumerate(await get_album_songs(album_id)):
                 if songs.is_exists(song_id):
                     continue
                 songs.add(song_id, song_title, i, have_text)
@@ -66,7 +66,7 @@ def compress_lines(lines: list) -> list:
 
 
 def get_song_lines(song_id: str):
-    lyrics = get_song_lyrics(song_id)
+    lyrics = await get_song_lyrics(song_id)
     lines = compress_lines(lyrics.split('\n'))
     for line in lines:
         clear_line = line.strip()
@@ -75,7 +75,7 @@ def get_song_lines(song_id: str):
 
 
 def get_line_by_id(song_id: str, line_id: int) -> str:
-    lyrics = get_song_lyrics(song_id)
+    lyrics = await get_song_lyrics(song_id)
     lines = compress_lines(lyrics.split('\n'))
     return lines[line_id]
 

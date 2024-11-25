@@ -5,7 +5,27 @@ rt: Router = Router()
 @rt.message(CommandStart())  # /start
 async def cmd_start(message: Message):
     if users.add(message.from_user.id, message.from_user.username):
-        await message.answer(text=phrases["cmd_start"], reply_markup=kb.main)
+        await message.answer(text=phrases["cmd_start"], reply_markup=kb.start)
+
+
+@rt.callback_query(F.data == 'read_agreement')
+async def call_cancel(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(phrases["agreement"], reply_markup=kb.agreement)
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+
+@rt.callback_query(F.data == 'agree')
+async def call_cancel(callback: CallbackQuery):
+    await callback.answer()
+    users.admit(callback.from_user.id)
+    await callback.message.answer(text=phrases['admitted'], reply_markup=kb.main)
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+
+@rt.message(IsNotAdmitted())
+async def catch_admit(message: Message):
+    await sent_to_not_admitted(message)
 
 
 @rt.message(IsBaned())
@@ -23,9 +43,14 @@ async def cmd_help(message: Message):
     await message.answer(phrases["cmd_help"], reply_markup=kb.main)
 
 
+@rt.message(Command(commands='agreement'))  # /agreement
+async def cmd_agreement(message: Message):
+    await message.answer(phrases["agreement"], reply_markup=kb.main)
+
+
 @rt.message(Command(commands='day_song'))  # /day_song
 async def cmd_day_song(message: Message):
-    song_title, song_id, artists_title, album_id = get_day_song()
+    song_title, song_id, artists_title, album_id = await get_day_song()
 
     msg_txt = make_song_lyrics_message(song=song_title,
                                        artist=artists_title,
@@ -50,7 +75,7 @@ async def cmd_format(message: Message):
     if len(groups) == 3:
         if await is_yandex_link(groups[2]):
             song_id = search(YANDEX_SONG_ID_PATTERN, groups[2]).group(1)
-            song_title, artist_title = get_song_artist_title(song_id)
+            song_title, artist_title = await get_song_artist_title_by_song_id(song_id)
             msg_text = make_song_lyrics_message(lines=groups[0],
                                                 song=song_title,
                                                 artist=artist_title,
@@ -67,7 +92,7 @@ async def cmd_format(message: Message):
     elif len(groups) == 2:
         if await is_yandex_link(groups[1]):
             song_id = search(YANDEX_SONG_ID_PATTERN, groups[1]).group(1)
-            song_title, artist_title = get_song_artist_title(song_id)
+            song_title, artist_title = await get_song_artist_title_by_song_id(song_id)
             msg_text = make_song_lyrics_message(lines=groups[0],
                                                 song=song_title,
                                                 artist=artist_title,
@@ -87,4 +112,6 @@ async def cmd_format(message: Message):
 
 @rt.callback_query(F.data == 'pass')
 async def call_cancel(callback: CallbackQuery):
-    await callback.answer(reply_markup=kb.main)
+    await callback.answer(reply_markup=kb.main)\
+
+

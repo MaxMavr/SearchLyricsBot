@@ -1,5 +1,5 @@
 from os.path import dirname
-from config.secret_const import GENIUS_TOKEN as __GENIUS_TOKEN
+# from config.secret_const import GENIUS_TOKEN as __GENIUS_TOKEN
 from config.secret_const import YANDEX_TOKEN
 
 __MAIN_DIR = f'{dirname(__file__)}/../'
@@ -27,8 +27,12 @@ IMG_NULL_FILE = __MAIN_DIR + '/assets/null.png'
 # GENIUS_SEARCH_URL = GENIUS_API_MAIN_URL + "/search"
 # GENIUS_LYRICS_CONTAINER = "Lyrics__Container-sc-1ynbvzw-1 kUgSbL"
 
-MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+YNISON_DEVICE_INFO = {'app_name': 'Chrome', 'type': 1}
+YNISON_GRY_MAIN_URL = 'wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison'
+YNISON_PYS_MAIN_URL = 'wss://%%/ynison_state.YnisonStateService/PutYnisonState'
 
+MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября',
+               'ноября', 'декабря']
 
 ARTISTS_PAGE_SIZE = 10
 ARTIST_PAGE_SIZE = 20
@@ -37,14 +41,11 @@ SONG_PAGE_SIZE = 20
 
 USERS_PAGE_SIZE = 20
 
-
 EMBEDDING_MODEL = "ai-forever/ru-en-RoSBERTa"
-
 
 YANDEX_LINK_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/\d+'
 YANDEX_SONG_ID_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/(\d+)'
 LINK_PATTERN = r'https://'
-
 
 # Настоящий -1001914815060
 # Тестовый -1002070355602

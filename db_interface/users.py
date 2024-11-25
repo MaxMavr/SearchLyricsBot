@@ -9,7 +9,7 @@ def __create():
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY NOT NULL,
                 username TEXT NOT NULL DEFAULT 'username',
-                status INTEGER CHECK (status IN (-2 -1, 0, 1)) NOT NULL DEFAULT 0
+                status INTEGER CHECK (status IN (-2, -1, 0, 1)) NOT NULL DEFAULT -2
             )
         ''')  # status Не зарегистрирован, Забанен, Обычный, Админ
         cursor.close()
