@@ -34,35 +34,35 @@ def delete(song_id: str):
         conn.commit()
 
 
-def get(song_id: str):
+def get(song_id: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM songs WHERE id = ?', (song_id,))
         return cursor.fetchone()
 
 
-def get_by_title(song_title: str):
+def get_by_title(song_title: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM songs WHERE title = ?', (song_title,))
         return cursor.fetchone()
 
 
-def is_exists(songs_id: str):
+def is_exists(songs_id: str) -> bool:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM songs WHERE id = ?', (songs_id,))
         return cursor.fetchone()[0] > 0
 
 
-def count():
+def count() -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM songs')
         return cursor.fetchone()[0]
 
 
-def count_with_text():
+def count_with_text() -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM songs WHERE have_text = 1')
@@ -83,11 +83,16 @@ def upd_embed_status(song_id: str, embedded: bool):
         conn.commit()
 
 
-def get_for_embedded():
+def get_for_embedded(start_page_number: int = 0, page_size: int = 20):
+    max_page_number = ceil(count_with_text() / page_size)
+
     with sqlite3.connect(SONG_INFO_DB) as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM songs WHERE have_text = 1 AND embedded = 0')
-        return cursor.fetchall()
+        for page_number in range(start_page_number, max_page_number):
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM songs WHERE have_text = 1 AND embedded = 0 LIMIT ? OFFSET ?',
+                           (page_size, page_number * page_size))
+            for song in cursor.fetchall():
+                yield song
 
 
 __create()

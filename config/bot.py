@@ -98,14 +98,9 @@ class IsSuperAdmin(BaseFilter):
         return await self.check(message.from_user.id)
 
 
-async def sent_to_banned(message: Message):
+async def sent_from_list(message: Message, keyword: str):
     await message.answer(
-        phrases["stat_ban"][randint(0, len(phrases["stat_ban"]) - 1)])
-
-
-async def sent_to_not_admitted(message: Message):
-    await message.answer(
-        phrases["stat_not_admit"][randint(0, len(phrases["stat_not_admit"]) - 1)])
+        phrases[keyword][randint(0, len(phrases[keyword]) - 1)])
 
 
 async def get_cmd_args(message: Message) -> list:

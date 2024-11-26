@@ -29,21 +29,21 @@ def delete(artist_id: str):
         conn.commit()
 
 
-def get(artist_id: str):
+def get(artist_id: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM artists WHERE id = ?', (artist_id,))
         return cursor.fetchone()
 
 
-def get_title(artist_id: str):
+def get_title(artist_id: str) -> str:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT title FROM artists WHERE id = ?', (artist_id,))
         return cursor.fetchone()[0]
 
 
-def get_by_page(page_number: int, page_size: int):
+def get_by_page(page_number: int, page_size: int) -> list:
     offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
@@ -52,7 +52,7 @@ def get_by_page(page_number: int, page_size: int):
         return cursor.fetchall()
 
 
-def get_by_select_number(select_number: int):
+def get_by_select_number(select_number: int) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM artists ORDER BY (take_songs = 0), title ASC LIMIT 1 OFFSET ?',
@@ -60,7 +60,7 @@ def get_by_select_number(select_number: int):
         return cursor.fetchone()
 
 
-def is_exists(artist_id: str):
+def is_exists(artist_id: str) -> bool:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM artists WHERE id = ?', (artist_id,))
@@ -81,7 +81,7 @@ def count() -> int:
         return cursor.fetchone()[0]
 
 
-def count_take_song():
+def count_take_song() -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM artists WHERE take_songs = 1')

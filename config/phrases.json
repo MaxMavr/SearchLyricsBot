@@ -27,6 +27,7 @@
   "publish_post": "Опубликовал \uD83D\uDE3D",
   "suggest_post": "Отправил админу, надеюсь примет \uD83D\uDE09",
 
+  "title_users": "<b>Пользователи</b>\n\n",
   "title_artists": "<b>Исполнители</b>\n\n",
   "title_artist": "<b>Альбомы</b>\n",
   "title_album": "<b>Альбом</b>\n",
@@ -89,6 +90,7 @@
   "icon_text": "\uD83D\uDFE2 ",
   "icon_not_text": "⚪️ ",
   "icon_embedded": "\uD83D\uDCF6 ",
+  "icon_admin": "\uD83D\uDC78 ",
 
   "icon_empty": "ㅤ",
 

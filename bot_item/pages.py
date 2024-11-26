@@ -1,5 +1,3 @@
-# TODO:
-#  Файл для создания стрелочек
 import time
 
 from config.const import (MONTH_NAMES,
@@ -11,6 +9,7 @@ from config.const import (MONTH_NAMES,
                           IMG_NULL_FILE)
 from config.bot import *
 
+# TODO ПЕРЕПИСАТЬ ВСЕ ЭТО
 
 async def __init_page(event: Union[Message, CallbackQuery]):
     if isinstance(event, CallbackQuery):
@@ -50,7 +49,7 @@ async def __update_page(event: Union[Message, CallbackQuery],
 
     if photo and song:
         event: CallbackQuery = event
-        await bot.send_media_group(
+        await bot.send(
             chat_id=event.message.chat.id,
             media=[
                 InputMediaPhoto(
@@ -262,7 +261,7 @@ async def make_album_page(select_vector: Tuple[int, int, int, int], show_ids: bo
     for i in range(ALBUM_PAGE_SIZE):
         if i < len(page):
             song_id, song_title, _, have_text, embedded = page[i]
-            song_artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id) if not artist in album_artists_title])
+            song_artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id) if artist not in album_artists_title])
             link = make_yandex_link(song_id, album_id)
             if i == relative_select_number:
                 page_text += phrases['icon_select']
@@ -335,3 +334,41 @@ async def make_song_page(select_vector: Tuple[int, int, int, int], show_ids: boo
                            bonds.count_albums_by_artist(artist_id))
 
     return page_text, page_kb, __format_img_link(album_img), (song, f'{artists_title} — {song_title}\n')
+
+
+async def make_users_page(event: Union[Message, CallbackQuery], select_number: int):
+    if isinstance(event, CallbackQuery):
+        await event.answer()
+
+    page = users.get_by_page(select_number, USERS_PAGE_SIZE)
+    max_page_number = __calculate_page_number(users.count(), USERS_PAGE_SIZE)
+    page_text = phrases['title_users']
+
+    for i in range(USERS_PAGE_SIZE):
+        if i < len(page):
+            user_id, username, status = page[i]
+            page_text += f'<code>{str(user_id).ljust(12)}</code>'
+
+            if status == 1:
+                page_text += f'{phrases["icon_admin"]}<b>@{username}</b>'
+            elif status == -1:
+                page_text += f'<s>@{username}</s>'
+            elif status == -2:
+                page_text += f'<tg-spoiler>@{username}</tg-spoiler>'
+            else:
+                page_text += f'@{username}'
+        page_text += '\n'
+
+    page_text += __make_page_counter(select_number, max_page_number)
+
+    page_kb = kb.make_users(select_number,
+                            max_page_number)
+
+    if isinstance(event, Message):
+        await event.answer(
+            text=page_text,
+            reply_markup=page_kb)
+    else:
+        await event.message.edit_text(
+            text=page_text,
+            reply_markup=page_kb)

@@ -44,7 +44,7 @@ def upd_err_artists(err_artists: list):
     __upd_list_json(ERR_ARTISTS_FILE, err_artists)
 
 
-def read_day_song():
+def read_day_song() -> list:
     if not __is_file_exist(DAY_SONG_FILE):
         return [' ', ' ', ' ', ' ']
     return __read_json(DAY_SONG_FILE)

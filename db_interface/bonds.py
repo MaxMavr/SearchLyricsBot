@@ -25,7 +25,7 @@ def add(id_artist: str, id_album: str, id_song: str):
         conn.commit()
 
 
-def get_albums_by_artist_by_page(id_artist: str, page_number: int, page_size: int):
+def get_albums_by_artist_by_page(id_artist: str, page_number: int, page_size: int) -> list:
     offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
@@ -35,7 +35,7 @@ def get_albums_by_artist_by_page(id_artist: str, page_number: int, page_size: in
         return cursor.fetchall()
 
 
-def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int):
+def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int) -> list:
     offset = (page_number - 1) * page_size
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
@@ -45,7 +45,7 @@ def get_songs_by_album_by_page(id_album: str, page_number: int, page_size: int):
         return cursor.fetchall()
 
 
-def get_albums_by_artist_select_number(id_artist: str, select_number: int):
+def get_albums_by_artist_select_number(id_artist: str, select_number: int) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM albums WHERE id IN (
@@ -54,7 +54,7 @@ def get_albums_by_artist_select_number(id_artist: str, select_number: int):
         return cursor.fetchone()
 
 
-def get_songs_by_album_select_number(id_album: str, select_number: int):
+def get_songs_by_album_select_number(id_album: str, select_number: int) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM songs WHERE id IN (
@@ -63,28 +63,28 @@ def get_songs_by_album_select_number(id_album: str, select_number: int):
         return cursor.fetchone()
 
 
-def get_ids_by_artist(id_artist: str):
+def get_ids_by_artist(id_artist: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_artist = ?', (id_artist,))
         return cursor.fetchall()
 
 
-def get_ids_by_album(id_album: str):
+def get_ids_by_album(id_album: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_album = ?', (id_album,))
         return cursor.fetchall()
 
 
-def get_ids_by_song(id_song: str):
+def get_ids_by_song(id_song: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_song = ?', (id_song,))
         return cursor.fetchall()
 
 
-def count_albums_by_artist(id_artist: str):
+def count_albums_by_artist(id_artist: str) -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT COUNT(*) FROM albums WHERE id IN (
@@ -93,7 +93,7 @@ def count_albums_by_artist(id_artist: str):
         return cursor.fetchone()[0]
 
 
-def count_songs_by_album(id_album: str):
+def count_songs_by_album(id_album: str) -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('''SELECT COUNT(*) FROM songs WHERE id IN (

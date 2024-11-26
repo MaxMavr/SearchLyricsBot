@@ -2,7 +2,7 @@ from config.net import *
 from config.const import GENIUS_HEADERS, GENIUS_SEARCH_URL, GENIUS_MAIN_URL, GENIUS_LYRICS_CONTAINER
 
 '''
-Мы отказались использовать Genius, так как я не могу полность текста песни при парсинге
+Мы отказались использовать Genius, так как я не могу гарантировать полность текста песни при парсинге
 '''
 
 

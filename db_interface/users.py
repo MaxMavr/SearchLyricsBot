@@ -33,17 +33,18 @@ def delete(user_id: int):
         conn.commit()
 
 
-def get_all():
+def get_by_page(page_number: int, page_size: int):
+    offset = (page_number - 1) * page_size
     with sqlite3.connect(USERS_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT * FROM users ORDER BY 
-            CASE 
-                WHEN status = 1 THEN 1
-                WHEN status = 0 THEN 2
-                WHEN status = -1 THEN 3
-            END
-        ''')
+        cursor.execute('SELECT * FROM users '
+                       'ORDER BY CASE '
+                       'WHEN status = 1 THEN 1 '
+                       'WHEN status = 0 THEN 2 '
+                       'WHEN status = -1 THEN 3 '
+                       'WHEN status = -2 THEN 4 '
+                       'END LIMIT ? OFFSET ?',
+                       (page_size, offset))
         return cursor.fetchall()
 
 
@@ -51,6 +52,13 @@ def get_username(user_id: int) -> str:
     with sqlite3.connect(USERS_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        return cursor.fetchone()[0]
+
+
+def count() -> int:
+    with sqlite3.connect(USERS_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM users')
         return cursor.fetchone()[0]
 
 

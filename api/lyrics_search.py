@@ -24,6 +24,10 @@ def process_raw_artists():
     for raw_artist in raw_artists:
         artist_id, artist_title = await search_artist_id(raw_artist)
 
+        if not artist_id:
+            err_artists.append(raw_artist)
+            continue
+
         if not artists.is_exists(artist_id):
             artists.add(artist_id, artist_title, True)
         else:

@@ -25,12 +25,12 @@ async def call_cancel(callback: CallbackQuery):
 
 @rt.message(IsNotAdmitted())
 async def catch_admit(message: Message):
-    await sent_to_not_admitted(message)
+    await sent_from_list(message, 'stat_ban')
 
 
 @rt.message(IsBaned())
 async def catch_ban(message: Message):
-    await sent_to_banned(message)
+    await sent_from_list(message, 'stat_not_admit')
 
 
 @rt.message(Command(commands='about'))  # /about

@@ -12,15 +12,16 @@ from db_interface.files import (read_day_song,
 __client = ClientAsync(YANDEX_TOKEN)
 
 
-async def get_song_lyrics(song_id) -> Union[str, None]:
+async def get_song_lyrics(song_id) -> Optional[str]:
     song = (await __client.tracks(song_id))[0]
     if song.lyrics_info.has_available_text_lyrics:
-        return await (await song.get_lyrics_async()).fetch_lyrics_async()
+        lyrics = await song.get_lyrics_async()
+        return await lyrics.fetch_lyrics_async()
     else:
-        return None
+        return
 
 
-async def get_album_songs(album_id):
+async def get_album_songs(album_id: str):
     response = await __client.albums_with_tracks(album_id)
 
     for volume in response.volumes:
@@ -34,7 +35,7 @@ async def get_album_songs(album_id):
             yield song_id, title, artists_id, have_lyrics
 
 
-async def get_artist_albums(artist_id):
+async def get_artist_albums(artist_id: str):
     page = 0
     response = await __client.artists_direct_albums(artist_id, page=page)
 
@@ -61,23 +62,23 @@ async def get_artist_title_by_album_id(album_id: str) -> list:
     return [artist.name for artist in album.artists]
 
 
-async def search_artist_id(artist_title: str) -> Tuple[str, str]:
+async def search_artist_id(artist_title: str) -> Union[Tuple[str, str], Tuple[None, None]]:
     search_result = await __client.search(artist_title)
 
     if search_result.best.type == 'artist':
         if search_result.best.result.name.lower() == artist_title.lower():
             return str(search_result.best.result.id), search_result.best.result.name
-    return '', ''
+    return None, None
 
 
 async def download_song(artist_title: str, album_id: str, song_id: str, x_factor) -> str:
     song = (await __client.tracks(song_id))[0]
-    save_path = TEMP_DIR + f'{artist_title}-{album_id}-{song_id}-{x_factor}.mp3'
+    save_path = TEMP_DIR + f'/{artist_title}-{album_id}-{song_id}-{x_factor}.mp3'
     await song.download_async(save_path)
     return save_path
 
 
-async def get_day_song() -> Optional[Tuple[str, str, str, str]]:
+async def get_day_song() -> Tuple[str, str, str, str]:
     song = await song_from_ynison()
 
     if not song[0]:
@@ -87,7 +88,7 @@ async def get_day_song() -> Optional[Tuple[str, str, str, str]]:
     return song
 
 
-def __create_request_payload(web_socket_proto):
+def __create_request_payload(web_socket_proto: dict) -> dict:
     return {
         "update_full_state": {
             "player_state": {
@@ -139,7 +140,7 @@ def __create_request_payload(web_socket_proto):
         "activity_interception_type": "DO_NOT_INTERCEPT_BY_DEFAULT"}
 
 
-def __create_request_headers(web_socket_proto):
+def __create_request_headers(web_socket_proto: dict) -> dict:
     return {
         "Sec-WebSocket-Protocol": f"Bearer, v2, {dumps(web_socket_proto)}",
         "Origin": "http://music.yandex.ru",
@@ -178,7 +179,7 @@ async def __fetch_ynison(session):
         return loads(recv.data)
 
 
-async def song_from_ynison():
+async def song_from_ynison() -> Union[Tuple[str, str, str, str], Tuple[None, None, None, None]]:
     try:
         async with aiohttp.ClientSession() as session:
             ynison = await __fetch_ynison(session)

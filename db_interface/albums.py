@@ -30,21 +30,21 @@ def delete(album_id: str):
         conn.commit()
 
 
-def get(album_id: str):
+def get(album_id: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM albums WHERE id = ?', (album_id,))
         return cursor.fetchone()
 
 
-def is_exists(albums_id: str):
+def is_exists(albums_id: str) -> bool:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM albums WHERE id = ?', (albums_id,))
         return cursor.fetchone()[0] > 0
 
 
-def count():
+def count() -> int:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM albums')

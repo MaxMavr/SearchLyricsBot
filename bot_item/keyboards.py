@@ -5,6 +5,8 @@ from config.const import (ARTISTS_PAGE_SIZE,
                           SONG_PAGE_SIZE,
                           USERS_PAGE_SIZE)
 
+# TODO ПЕРЕПИСАТЬ ВСЕ ЭТО
+
 suffixes2suffixes_text = {
     'A': 'artist',
     'a': 'album',
@@ -358,3 +360,13 @@ def make_song(select_vector: Tuple[int, int, int, int],
         [__make_page_button(parent), __make_page_button(ids), __make_page_button(child)],
         [__make_page_button(next_item)]
     ])
+
+
+def make_users(page_number: int, max_page: int):
+    kb = IBuilder()
+
+    if page_number != 1:
+        kb.button(text=phrases['button_past_page'], callback_data=f'pageUSERS_{page_number - 1}')
+    if page_number < max_page:
+        kb.button(text=phrases['button_next_page'], callback_data=f'pageUSERS_{page_number + 1}')
+    return kb.adjust(2).as_markup(resize_keyboard=True)

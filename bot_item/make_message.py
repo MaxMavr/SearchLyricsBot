@@ -7,7 +7,7 @@ def make_song_lyrics_message(
         song: str = None,
         artist: str = None,
         link: str = None,
-        lines: str = None):
+        lines: str = None) -> str:
 
     msg = ''
     if lines:
