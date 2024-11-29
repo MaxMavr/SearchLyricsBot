@@ -2,9 +2,10 @@ from os.path import dirname
 # from config.secret_const import GENIUS_TOKEN as __GENIUS_TOKEN
 from config.secret_const import YANDEX_TOKEN
 
-__MAIN_DIR = f'{dirname(__file__)}/../'
-__CONFIG_DIR = f'{dirname(__file__)}/'
+__MAIN_DIR = f'{dirname(__file__)}/..'
+__CONFIG_DIR = f'{dirname(__file__)}'
 TEMP_DIR = __MAIN_DIR + '/temp'
+ASSETS_DIR = __MAIN_DIR + '/assets'
 __DB_DIR = __MAIN_DIR + '/DB'
 
 ARTISTS_DIR = __DB_DIR + '/artists'
@@ -19,7 +20,8 @@ VECTORS_DB = __DB_DIR + '/vectors.vdb'
 USERS_DB = __DB_DIR + '/users.db'
 
 PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
-IMG_NULL_FILE = __MAIN_DIR + '/assets/null.png'
+IMG_NULL_FILE = ASSETS_DIR + '/null.png'
+IMG_LOGOS_FILE = ASSETS_DIR + '/logos.png'
 
 # GENIUS_HEADERS = {'Authorization': f'Bearer {__GENIUS_TOKEN}'}
 # GENIUS_API_MAIN_URL = "http://api.genius.com"
@@ -31,8 +33,8 @@ YNISON_DEVICE_INFO = {'app_name': 'Chrome', 'type': 1}
 YNISON_GRY_MAIN_URL = 'wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison'
 YNISON_PYS_MAIN_URL = 'wss://%%/ynison_state.YnisonStateService/PutYnisonState'
 
-MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября',
-               'ноября', 'декабря']
+MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+               'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
 ARTISTS_PAGE_SIZE = 10
 ARTIST_PAGE_SIZE = 20

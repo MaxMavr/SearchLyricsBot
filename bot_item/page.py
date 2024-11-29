@@ -11,6 +11,7 @@ from config.bot import *
 
 # TODO ПЕРЕПИСАТЬ ВСЕ ЭТО
 
+
 async def __init_page(event: Union[Message, CallbackQuery]):
     if isinstance(event, CallbackQuery):
         await event.answer()
@@ -86,14 +87,6 @@ async def __update_page(event: Union[Message, CallbackQuery],
         reply_markup=page_keyboard)
 
 
-def __page_decorator(func):
-    async def wrapper(event: Union[Message, CallbackQuery], select_vector: Tuple[int, int, int], show_ids: bool = False):
-        await __init_page(event)
-        page_text, page_keyboard, photo, song = await func(select_vector, show_ids)
-        await __update_page(event, page_text, page_keyboard, photo, song)
-    return wrapper
-
-
 def __split_lyrics_into_page(lyrics: str, max_length: int = 3000):
     fragments = ['\n'.join(group) for key, group in groupby(lyrics.split('\n'), lambda x: x == '') if not key]
 
@@ -145,15 +138,16 @@ def __calculate_relative_select_number(select_number: int, page_size: int) -> in
     return (select_number - 1) % page_size
 
 
-@__page_decorator
-async def make_artists_page(select_vector: Tuple[int, int, int, int], show_ids: bool = False):
+async def make_artists(event: Union[Message, CallbackQuery], select_vector: Tuple[int, int, int, int]):
+    await __init_page(event)
+    settings_items = settings.get_for_artists(event.from_user.id)
+
     relative_select_number = __calculate_relative_select_number(select_vector[0], ARTISTS_PAGE_SIZE)
+    page_number = __calculate_page_number(select_vector[0], ARTISTS_PAGE_SIZE)
+    page = artists.get_by_page(page_number, ARTISTS_PAGE_SIZE)
 
     quantity = artists.count()
     max_page_number = __calculate_page_number(quantity, ARTISTS_PAGE_SIZE)
-
-    page_number = __calculate_page_number(select_vector[0], ARTISTS_PAGE_SIZE)
-    page = artists.get_by_page(page_number, ARTISTS_PAGE_SIZE)
 
     page_text = phrases['title_artists']
 
@@ -161,14 +155,16 @@ async def make_artists_page(select_vector: Tuple[int, int, int, int], show_ids: 
         if i < len(page):
             artist_id, artist_title, take_song = page[i]
             if i == relative_select_number:
-                page_text += phrases['icon_select']
+                page_text += settings_items['icon_select']
+            page_text += ' '
 
             if take_song:
-                page_text += phrases['icon_songs']
+                page_text += settings_items['icon_songs']
             else:
-                page_text += phrases['icon_not_songs']
+                page_text += settings_items['icon_not_songs']
+            page_text += ' '
 
-            if show_ids:
+            if settings_items['bool_show_ids']:
                 page_text += f'<code>{artist_id.ljust(9)}</code>'
 
             if i == relative_select_number:
@@ -177,7 +173,7 @@ async def make_artists_page(select_vector: Tuple[int, int, int, int], show_ids: 
                 page_text += f'{artist_title}'
         page_text += '\n'
 
-    if show_ids:
+    if settings_items['bool_show_ids']:
         page_text += phrases['footnote_ids_artists']
 
     page_text += phrases['footnote_artists']
@@ -187,23 +183,25 @@ async def make_artists_page(select_vector: Tuple[int, int, int, int], show_ids: 
                               relative_select_number,
                               quantity,
                               page_number,
-                              max_page_number,
-                              show_ids)
+                              max_page_number)
 
-    return page_text, page_kb, None, None
+    if isinstance(event, Message):
+        await event.answer(text=page_text, reply_markup=page_kb)
+        return
+    await event.message.edit_text(text=page_text, reply_markup=page_kb)
 
 
-@__page_decorator
-async def make_artist_page(select_vector: Tuple[int, int, int, int], show_ids: bool = False):
-    artist_id, artist_title, _ = artists.get_by_select_number(select_vector[0] - 1)
+async def make_artist(event: Union[Message, CallbackQuery], select_vector: Tuple[int, int, int, int]):
+    await __init_page(event)
+    settings_items = settings.get_for_artist(event.from_user.id)
+
+    artist_id, artist_title, _ = artists.get_by_select_number(select_vector[1] - 1)
+    relative_select_number = __calculate_relative_select_number(select_vector[1], ARTIST_PAGE_SIZE)
+    page_number = __calculate_page_number(select_vector[1], ARTIST_PAGE_SIZE)
+    page = bonds.get_albums_by_artist_by_page(artist_id, page_number, ARTIST_PAGE_SIZE)
 
     quantity = bonds.count_albums_by_artist(artist_id)
     max_page_number = __calculate_page_number(quantity, ARTIST_PAGE_SIZE)
-
-    relative_select_number = __calculate_relative_select_number(select_vector[1], ARTIST_PAGE_SIZE)
-
-    page_number = __calculate_page_number(select_vector[1], ARTIST_PAGE_SIZE)
-    page = bonds.get_albums_by_artist_by_page(artist_id, page_number, ARTIST_PAGE_SIZE)
 
     page_text = phrases['title_artist']
     page_text += f'{artist_title}\n\n'
@@ -212,8 +210,10 @@ async def make_artist_page(select_vector: Tuple[int, int, int, int], show_ids: b
         if i < len(page):
             album_id, album_title, _, _ = page[i]
             if i == relative_select_number:
-                page_text += phrases['icon_select']
-            if show_ids:
+                page_text += settings_items['icon_select']
+            page_text += ' '
+
+            if settings_items['bool_show_ids']:
                 page_text += f'<code>{album_id.ljust(9)}</code>'
             if i == relative_select_number:
                 page_text += f'<b>{album_title}</b>'
@@ -221,7 +221,7 @@ async def make_artist_page(select_vector: Tuple[int, int, int, int], show_ids: b
                 page_text += f'{album_title}'
         page_text += '\n'
 
-    if show_ids:
+    if settings_items['bool_show_ids']:
         page_text += phrases['footnote_ids_albums']
 
     page_text += __make_page_counter(page_number, max_page_number)
@@ -230,14 +230,24 @@ async def make_artist_page(select_vector: Tuple[int, int, int, int], show_ids: b
                              relative_select_number,
                              quantity,
                              page_number,
-                             max_page_number,
-                             show_ids)
+                             max_page_number)
 
-    return page_text, page_kb, None, None
+    if isinstance(event, Message):
+        await event.answer(text=page_text, reply_markup=page_kb)
+        return
+
+    if event.message.photo:
+        await event.message.answer(text=page_text, reply_markup=page_kb)
+        await event.message.delete()
+        return
+
+    await event.message.edit_text(text=page_text, reply_markup=page_kb)
 
 
-@__page_decorator
-async def make_album_page(select_vector: Tuple[int, int, int, int], show_ids: bool = False):
+async def make_album(event: Union[Message, CallbackQuery], select_vector: Tuple[int, int, int, int]):
+    await __init_page(event)
+    settings_items = settings.get_for_album(event.from_user.id)
+
     artist_id, _, _ = artists.get_by_select_number(select_vector[0] - 1)
     album_id, album_title, album_img, album_date = bonds.get_albums_by_artist_select_number(artist_id, select_vector[1] - 1)
     album_artists_title = ', '.join(await get_artist_title_by_album_id(album_id))
@@ -256,37 +266,48 @@ async def make_album_page(select_vector: Tuple[int, int, int, int], show_ids: bo
 
     page = bonds.get_songs_by_album_by_page(album_id, page_number, ALBUM_PAGE_SIZE)
 
-    page_text = f'<b>{album_title}</b>\n{album_artists_title}\n{__format_date(album_date)}\n\n'
+    page_text = f'<b>{album_title}</b>\n{album_artists_title}\n'
+
+    if settings_items['bool_show_date']:
+        page_text += f'{__format_date(album_date)}\n\n'
 
     for i in range(ALBUM_PAGE_SIZE):
         if i < len(page):
             song_id, song_title, _, have_text, embedded = page[i]
-            song_artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id) if artist not in album_artists_title])
+
+            song_artists_title = ''
+            if settings_items['bool_show_feat']:
+                song_artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id) if artist not in album_artists_title])
             link = make_yandex_link(song_id, album_id)
+
             if i == relative_select_number:
-                page_text += phrases['icon_select']
+                page_text += settings_items['icon_select']
+
             if have_text:
                 if embedded:
-                    page_text += phrases['icon_embedded']
+                    page_text += settings_items['icon_embedded']
                 else:
-                    page_text += phrases['icon_text']
+                    page_text += settings_items['icon_text']
             else:
-                page_text += phrases['icon_not_text']
+                page_text += settings_items['icon_not_text']
 
-            if show_ids:
+            if settings_items['bool_show_ids']:
                 page_text += f'<code>{song_id.ljust(9)}</code>'
+
             if i == relative_select_number:
                 page_text += f'<b><a href="{link}">{song_title}'
-                if song_artists_title != '':
-                    page_text += f' — {song_artists_title}'
+                if settings_items['bool_show_feat']:
+                    if song_artists_title != '':
+                        page_text += f' — {song_artists_title}'
                 page_text += f'</a></b>\n'
             else:
                 page_text += f'<a href="{link}">{song_title}'
-                if song_artists_title != '':
-                    page_text += f' — {song_artists_title}'
+                if settings_items['bool_show_feat']:
+                    if song_artists_title != '':
+                        page_text += f' — {song_artists_title}'
                 page_text += f'</a>\n'
 
-    if show_ids:
+    if settings_items['bool_show_ids']:
         page_text += phrases['footnote_ids_songs']
 
     page_text += phrases['footnote_songs']
@@ -297,14 +318,13 @@ async def make_album_page(select_vector: Tuple[int, int, int, int], show_ids: bo
                             quantity,
                             page_number,
                             max_page_number,
-                            show_ids,
                             bonds.count_albums_by_artist(artist_id))
 
     return page_text, page_kb, __format_img_link(album_img), None
 
 
-@__page_decorator
-async def make_song_page(select_vector: Tuple[int, int, int, int], show_ids: bool = False):
+async def make_song(select_vector: Tuple[int, int, int, int], show_ids: bool = False):
+    await __init_page(event)
     artist_id, _, _ = artists.get_by_select_number(select_vector[0] - 1)
     album_id, _, album_img, _ = bonds.get_albums_by_artist_select_number(artist_id, select_vector[1] - 1)
     song_id, song_title, _, have_text, embedded = bonds.get_songs_by_album_select_number(album_id, select_vector[2] - 1)
@@ -336,9 +356,8 @@ async def make_song_page(select_vector: Tuple[int, int, int, int], show_ids: boo
     return page_text, page_kb, __format_img_link(album_img), (song, f'{artists_title} — {song_title}\n')
 
 
-async def make_users_page(event: Union[Message, CallbackQuery], select_number: int):
-    if isinstance(event, CallbackQuery):
-        await event.answer()
+async def make_users(event: Union[Message, CallbackQuery], select_number: int):
+    await __init_page(event)
 
     page = users.get_by_page(select_number, USERS_PAGE_SIZE)
     max_page_number = __calculate_page_number(users.count(), USERS_PAGE_SIZE)
@@ -372,3 +391,27 @@ async def make_users_page(event: Union[Message, CallbackQuery], select_number: i
         await event.message.edit_text(
             text=page_text,
             reply_markup=page_kb)
+
+
+async def make_settings(event: Union[Message, CallbackQuery]):
+    await __init_page(event)
+    settings_items = settings.get(event.from_user.id)
+
+    page_text = phrases['title_settings']
+    page_text += phrases['title_icon']
+    for name, value in settings_items.items():
+        if str(name).startswith('icon_'):
+            page_text += f'{value} '
+            page_text += phrases[f'settings_description_{name}']
+
+    page_text += phrases['title_show']
+    for name, value in settings_items.items():
+        if str(name).startswith('bool_'):
+            page_text += phrases[f'settings_description_{name}']
+
+    page_kb = kb.make_settings(settings_items)
+
+    if isinstance(event, Message):
+        await event.answer(text=page_text, reply_markup=page_kb)
+        return
+    await event.message.edit_text(text=page_text, reply_markup=page_kb)

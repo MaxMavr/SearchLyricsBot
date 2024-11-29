@@ -1,4 +1,5 @@
 from config.bot import *
+import bot_item.page as pg
 rt: Router = Router()
 
 
@@ -32,10 +33,22 @@ async def catch_admit(message: Message):
 async def catch_ban(message: Message):
     await sent_from_list(message, 'stat_not_admit')
 
+# - - - - - - - - Сверху стандартные функции, снизу приколы - - - - - - - -
+
+
+@rt.message(F.text.lower() == 'настройки')
+async def catch_settings(message: Message):
+    await pg.make_settings(message)
+
+
+@rt.message(Command(commands='settings'))  # /settings
+async def cmd_artists(message: Message):
+    await catch_settings(message)
+
 
 @rt.message(Command(commands='about'))  # /about
 async def cmd_about(message: Message):
-    await message.answer(phrases["cmd_about"], reply_markup=kb.main)
+    await message.answer_photo(caption=phrases["cmd_about"], reply_markup=kb.main, photo=FSInputFile(IMG_LOGOS_FILE))
 
 
 @rt.message(Command(commands='help'))  # /help
@@ -52,19 +65,14 @@ async def cmd_agreement(message: Message):
 async def cmd_day_song(message: Message):
     song_title, song_id, artists_title, album_id = await get_day_song()
 
-    msg_txt = make_song_lyrics_message(song=song_title,
-                                       artist=artists_title,
+    msg_txt = make_song_lyrics_message(song=song_title, artist=artists_title,
                                        link=make_yandex_link(song_id, album_id))
     await message.answer(text=msg_txt, disable_web_page_preview=True, reply_markup=kb.main)
 
 
 @rt.message(Command(commands='format'))  # /format
-async def cmd_format(message: Message):
-    args = await get_cmd_args_by_newline(message)
-
-    if not args[0]:
-        return
-
+@command_with_arguments_by_newline
+async def cmd_format(message: Message, args):
     groups = ['\n'.join(group) for key, group in groupby(args, lambda x: x == '') if not key]
     del args
 
@@ -113,5 +121,3 @@ async def cmd_format(message: Message):
 @rt.callback_query(F.data == 'pass')
 async def call_cancel(callback: CallbackQuery):
     await callback.answer(reply_markup=kb.main)\
-
-

@@ -1,5 +1,6 @@
 from config.db import *
 from config.const import USERS_DB
+from db_interface.settings import add as settings_add
 
 
 def __create():
@@ -23,6 +24,7 @@ def add(user_id: int, username: str) -> bool:
         cursor = conn.cursor()
         cursor.execute('INSERT INTO users (id, username) VALUES (?, ?)', (user_id, username))
         conn.commit()
+        settings_add(user_id)
         return True
 
 
@@ -101,7 +103,10 @@ def is_admitted(user_id: int) -> bool:
     with sqlite3.connect(USERS_DB) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT status FROM users WHERE id = ?", (user_id,))
-        return cursor.fetchone()[0] == 0
+        status = cursor.fetchone()
+        if not status:
+            return False
+        return status[0] == 0
 
 
 def is_admin(user_id: int) -> bool:

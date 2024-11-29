@@ -60,6 +60,16 @@ def get_by_select_number(select_number: int) -> tuple:
         return cursor.fetchone()
 
 
+def get_select_number_by_id(artist_id: str) -> tuple:
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''WITH select_number AS (
+                          SELECT *, ROW_NUMBER() OVER (ORDER BY (take_songs = 0), title ASC) AS row_num FROM artists)
+                          SELECT row_num FROM select_number WHERE id = ?''',
+                       (artist_id,))
+        return cursor.fetchone()[0]
+
+
 def is_exists(artist_id: str) -> bool:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
