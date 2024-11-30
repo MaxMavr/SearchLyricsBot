@@ -26,13 +26,12 @@ async def get_album_songs(album_id: str):
 
     for volume in response.volumes:
         for song in volume:
-            song_id = str(song.id)
-            title = song.title
             artists_id = [(str(artist.id), artist.name) for artist in song.artists]
 
-            have_lyrics = song.lyrics_info.has_available_text_lyrics
-
-            yield song_id, title, artists_id, have_lyrics
+            if song.meta_data:
+                yield str(song.id), song.title, song.meta_data.number, artists_id, song.lyrics_info.has_available_text_lyrics
+            else:
+                yield str(song.id), song.title, 0, artists_id, song.lyrics_info.has_available_text_lyrics
 
 
 async def get_artist_albums(artist_id: str):

@@ -15,7 +15,7 @@ async def catch_goto_page_song_info(callback: CallbackQuery, state: FSMContext =
 
     if type_setting[1] == 'bool':
         settings.upd_bool(callback.from_user.id, '_'.join(type_setting[1:-1]))
-        await callback.answer(phrases[f"popup_{'_'.join(type_setting[1:])}"])
+        await callback.answer(phrases['settings']['popup']['_'.join(type_setting[1:])])
         await pg.make_settings(callback)
 
     if type_setting[1] == 'icon':
@@ -25,17 +25,25 @@ async def catch_goto_page_song_info(callback: CallbackQuery, state: FSMContext =
         await state.update_data(edit_icon='_'.join(type_setting[1:]))
         await callback.message.answer(text=phrases['settings_icon'] + phrases['footnote_cancel'])
 
+    if type_setting[1] == 'preset':
+        await callback.answer(
+            phrases['settings']['popup']['set']
+            + phrases['settings']['presets'][type_setting[2]]['title'] +
+            phrases['settings']['popup']['preset'])
+        settings.set_preset(callback.from_user.id, type_setting[2])
+        await pg.make_settings(callback)
+
 
 @rt.message(Settings.icon)
 async def set_icon(message: Message, state: FSMContext):
     if len(message.text) > 3:
-        await message.answer(phrases['err_long_argument_icon'])
+        await message.answer(phrases['error']['long_argument_icon'])
         return
 
     data = await state.get_data()
     edit_message: Message = data.get('edit_message')
     edit_icon = data.get('edit_icon')
-    settings.set_icon(message.from_user.id, edit_icon, message.text)
+    settings.set_icon(message.from_user.id, edit_icon, message.text.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;'))
     await edit_message.delete()
     await pg.make_settings(message)
     await state.clear()

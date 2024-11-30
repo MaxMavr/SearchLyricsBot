@@ -16,7 +16,7 @@ import db_interface.songs as songs
 import db_interface.bonds as bonds
 
 
-def process_raw_artists():
+async def process_raw_artists():
     raw_artists = read_raw_artists()
     err_artists = []
     feat_artists = []
@@ -34,16 +34,20 @@ def process_raw_artists():
             artists.upd_take_status(artist_id, True)
         print(artist_id, artist_title)
 
-        for album_id, album_title, album_cover, album_data in await get_artist_albums(artist_id):
+        async for album_id, album_title, album_cover, album_data in get_artist_albums(artist_id):
             if albums.is_exists(album_id):
                 continue
             print('\t', album_id, album_title)
-
-            for i, (song_id, song_title, song_artists, have_text) in enumerate(await get_album_songs(album_id)):
+            i = 0
+            async for song_id, song_title, song_number, song_artists, have_text in get_album_songs(album_id):
                 if songs.is_exists(song_id):
                     continue
-                songs.add(song_id, song_title, i, have_text)
-                print('\t\t', song_id, song_title, song_artists, have_text)
+
+                song_number += i
+                i += 1
+
+                songs.add(song_id, song_title, song_number, have_text)
+                print('\t\t', song_number, song_id, song_title, song_artists, have_text)
 
                 for song_artist_id, song_artist_title in song_artists:
                     if not artists.is_exists(song_artist_id):
@@ -57,6 +61,7 @@ def process_raw_artists():
     # clear_raw_artists()
     upd_feat_artists(feat_artists)
     upd_err_artists(err_artists)
+    return
 
 
 def compress_lines(lines: list) -> list:
@@ -69,7 +74,7 @@ def compress_lines(lines: list) -> list:
     return two_lines
 
 
-def get_song_lines(song_id: str):
+async def get_song_lines(song_id: str):
     lyrics = await get_song_lyrics(song_id)
     lines = compress_lines(lyrics.split('\n'))
     for line in lines:
@@ -78,12 +83,13 @@ def get_song_lines(song_id: str):
             yield clear_line
 
 
-def get_line_by_id(song_id: str, line_id: int) -> str:
+async def get_line_by_id(song_id: str, line_id: int) -> str:
     lyrics = await get_song_lyrics(song_id)
     lines = compress_lines(lyrics.split('\n'))
     return lines[line_id]
 
 
 if __name__ == "__main__":
-    process_raw_artists()
+    asyncio.run(process_raw_artists())
+
 

@@ -37,9 +37,8 @@ MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', '
                'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
 ARTISTS_PAGE_SIZE = 10
-ARTIST_PAGE_SIZE = 20
+ARTIST_PAGE_SIZE = 10
 ALBUM_PAGE_SIZE = 10
-SONG_PAGE_SIZE = 20
 
 USERS_PAGE_SIZE = 20
 

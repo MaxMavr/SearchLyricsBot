@@ -21,7 +21,7 @@ async def cmd_users(message: Message):
 @command_with_user_id_argument
 async def cmd_promote(message: Message, user_id):
     if IsAdmin().check(user_id):
-        await message.answer(text=phrases['err_user_admin'], reply_markup=kb.main)
+        await message.answer(text=phrases['error']['user_admin'], reply_markup=kb.main)
         return
     users.promote(user_id)
     await message.answer(text=phrases['promote'], reply_markup=kb.make_clear(user_id))
@@ -32,7 +32,7 @@ async def cmd_promote(message: Message, user_id):
 @command_with_user_id_argument
 async def cmd_demote(message: Message, user_id):
     if not IsAdmin().check(user_id):
-        await message.answer(text=phrases['err_user_not_admin'], reply_markup=kb.main)
+        await message.answer(text=phrases['error']['user_not_admin'], reply_markup=kb.main)
         return
     users.demote(user_id)
     await message.answer(text=phrases['demote'], reply_markup=kb.make_clear(user_id))
@@ -43,7 +43,7 @@ async def cmd_demote(message: Message, user_id):
 @command_with_user_id_argument
 async def cmd_banana(message: Message, user_id):
     if IsAdmin().check(user_id):
-        await message.answer(text=phrases['err_user_admin'], reply_markup=kb.main)
+        await message.answer(text=phrases['error']['user_admin'], reply_markup=kb.main)
         return
     users.ban(user_id)
     await message.answer(text=phrases['ban'], reply_markup=kb.make_clear(user_id))

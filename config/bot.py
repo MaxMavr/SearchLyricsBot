@@ -121,7 +121,7 @@ def command_with_arguments(func):
     async def wrapper(message: Message):
         args = message.text.split()[1:]
         if len(args) == 0:
-            await message.answer(phrases['err_empty_argument'], reply_markup=kb.main)
+            await message.answer(phrases['error']['empty_argument'], reply_markup=kb.main)
             return
         await func(message, args)
     return wrapper
@@ -131,7 +131,7 @@ def command_with_arguments_by_newline(func):
     async def wrapper(message: Message):
         args = message.text.split('\n')[1:]
         if len(args) == 0:
-            await message.answer(phrases['err_empty_newline_argument'], reply_markup=kb.main)
+            await message.answer(phrases['error']['empty_newline_argument'], reply_markup=kb.main)
             return
         await func(message, args)
     return wrapper
@@ -142,7 +142,7 @@ def command_with_digit_argument(func):
     async def wrapper(message: Message, args):
         digit = args[0]
         if not digit.isdigit():
-            await message.answer(phrases['err_not_digit'], reply_markup=kb.main)
+            await message.answer(phrases['error']['not_digit'], reply_markup=kb.main)
             return
         await func(message, digit)
     return wrapper
@@ -152,7 +152,7 @@ def command_with_user_id_argument(func):
     @command_with_digit_argument
     async def wrapper(message: Message, user_id):
         if not users.is_exists(user_id):
-            await message.answer(phrases['err_user_not_exist'], reply_markup=kb.main)
+            await message.answer(phrases['error']['user_not_exist'], reply_markup=kb.main)
             return
         await func(message, user_id)
     return wrapper
@@ -163,7 +163,7 @@ def command_with_artist_id_argument(func):
     async def wrapper(message: Message, args):
         artist_id = args[0]
         if not artists.is_exists(artist_id):
-            await message.answer(phrases['err_artist_not_exist'], reply_markup=kb.main)
+            await message.answer(phrases['error']['artist_not_exist'], reply_markup=kb.main)
             return
         await func(message, artist_id)
     return wrapper
@@ -174,7 +174,7 @@ def command_with_album_id_argument(func):
     async def wrapper(message: Message, args):
         album_id = args[0]
         if not albums.is_exists(album_id):
-            await message.answer(phrases['err_album_not_exist'], reply_markup=kb.main)
+            await message.answer(phrases['error']['album_not_exist'], reply_markup=kb.main)
             return
         await func(message, album_id)
     return wrapper
@@ -185,28 +185,12 @@ def command_with_song_id_argument(func):
     async def wrapper(message: Message, args):
         song_id = args[0]
         if not songs.is_exists(song_id):
-            await message.answer(phrases['err_song_not_exist'], reply_markup=kb.main)
+            await message.answer(phrases['error']['song_not_exist'], reply_markup=kb.main)
             return
         await func(message, song_id)
     return wrapper
 
 
-# async def get_cmd_id_from_yandex_link(message: Message) -> tuple:
-#     link = (await get_cmd_args(message))[0]
-#
-#     if not await is_link(link):
-#         await message.answer(phrases['err_is_not_link'], reply_markup=kb.main)
-#         return None, None
-#
-#     if not await is_yandex_link(link):
-#         await message.answer(phrases['err_is_not_yandex_link'], reply_markup=kb.main)
-#         return None, None
-#
-#     album_id, _, song_id = link.split('/')[-3:]
-#
-#     return album_id, song_id
-#
-#
 async def is_yandex_link(link: str) -> bool:
     return bool(search(YANDEX_LINK_PATTERN, link))
 

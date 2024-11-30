@@ -49,7 +49,8 @@ async def cmd_song(message: Message, args):
 async def catch_goto_page_song_info(callback: CallbackQuery):
     type_of_page, select_vector = decoding_page_callback(callback.data)
 
-    print(callback.data, type_of_page, select_vector)
+    # await callback.answer(f'{type_of_page}   {select_vector}')
+    # print(callback.data, type_of_page, select_vector)
 
     if type_of_page == 'A':
         await pg.make_artists(callback, select_vector)

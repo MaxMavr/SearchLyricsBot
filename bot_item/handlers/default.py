@@ -6,13 +6,13 @@ rt: Router = Router()
 @rt.message(CommandStart())  # /start
 async def cmd_start(message: Message):
     if users.add(message.from_user.id, message.from_user.username):
-        await message.answer(text=phrases["cmd_start"], reply_markup=kb.start)
+        await message.answer(text=phrases['cmd_start'], reply_markup=kb.start)
 
 
 @rt.callback_query(F.data == 'read_agreement')
 async def call_cancel(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.answer(phrases["agreement"], reply_markup=kb.agreement)
+    await callback.message.answer(phrases['agreement'], reply_markup=kb.agreement)
     await callback.message.edit_reply_markup(reply_markup=None)
 
 
@@ -66,7 +66,7 @@ async def cmd_day_song(message: Message):
     song_title, song_id, artists_title, album_id = await get_day_song()
 
     msg_txt = make_song_lyrics_message(song=song_title, artist=artists_title,
-                                       link=make_yandex_link(song_id, album_id))
+                                       link=make_yandex_song_link(song_id, album_id))
     await message.answer(text=msg_txt, disable_web_page_preview=True, reply_markup=kb.main)
 
 
@@ -77,7 +77,7 @@ async def cmd_format(message: Message, args):
     del args
 
     if len(groups) > 3:
-        await message.answer(text=phrases['err_lot_of_arguments_3'], reply_markup=kb.main)
+        await message.answer(text=phrases['error']['lot_of_arguments_3'], reply_markup=kb.main)
         return
 
     if len(groups) == 3:
