@@ -4,6 +4,7 @@ import time
 import torch
 import chromadb
 import numpy as np
+from typing import Tuple
 
 from sklearn.decomposition import PCA
 from sentence_transformers import SentenceTransformer

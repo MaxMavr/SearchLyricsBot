@@ -3,6 +3,8 @@ rt: Router = Router()
 
 
 @rt.message(F.content_type.in_({ContentType.TEXT,
+                                ContentType.STICKER,
+                                ContentType.STORY,
                                 ContentType.PHOTO,
                                 ContentType.AUDIO,
                                 ContentType.VOICE,

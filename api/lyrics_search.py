@@ -69,7 +69,7 @@ def compress_lines(lines: list) -> list:
 
     two_lines = []
     for ln in range(0, len(compressed_lines), 2):
-        two_lines.append(' '.join(compressed_lines[ln:ln + 2]))
+        two_lines.append('\n'.join(compressed_lines[ln:ln + 2]))
 
     return two_lines
 
@@ -86,7 +86,7 @@ async def get_song_lines(song_id: str):
 async def get_line_by_id(song_id: str, line_id: int) -> str:
     lyrics = await get_song_lyrics(song_id)
     lines = compress_lines(lyrics.split('\n'))
-    return lines[line_id]
+    return lines[line_id].strip()
 
 
 if __name__ == "__main__":

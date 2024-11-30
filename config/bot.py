@@ -35,6 +35,7 @@ import db_interface.bonds as bonds
 
 import bot_item.keyboards as kb
 from bot_item.keyboards import decoding_page_callback
+from api.lyrics_search import get_line_by_id
 from api.music_yandex import (get_day_song,
                               get_song_artist_title_by_song_id,
                               get_artist_title_by_album_id,

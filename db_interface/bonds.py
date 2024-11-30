@@ -81,7 +81,7 @@ def get_ids_by_song(id_song: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_song = ?', (id_song,))
-        return cursor.fetchall()
+        return cursor.fetchone()
 
 
 def count_albums_by_artist(id_artist: str) -> int:

@@ -1,8 +1,6 @@
 from config.db import *
 from config.const import SONG_INFO_DB
 
-# ToDo: Проверка на переиздание песен (к альфа-версии)
-
 
 def __create():
     with sqlite3.connect(SONG_INFO_DB) as conn:

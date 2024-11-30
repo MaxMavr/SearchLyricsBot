@@ -31,6 +31,10 @@ async def song_lines_to_embeddings(song_id: str, song_title: str, collection):
     print(f"{song_title.ljust(40)} :: SUCCESS!   ({round(time.time() - start_time, 3)})")
 
 
+async def search(query: str) -> Tuple[str, int]:
+    # TODO Сделать поиск
+    return '1', 1
+
 # collection.query(
 #     query_embeddings=vectors,
 #     n_results=10,
