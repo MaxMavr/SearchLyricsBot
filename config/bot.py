@@ -3,7 +3,6 @@ from os        import listdir, remove, makedirs, getenv
 from re        import search
 from math      import ceil
 from typing    import Union, List, Tuple, Callable, Coroutine
-from datetime  import datetime
 from random    import randint
 from itertools import groupby
 
@@ -34,6 +33,8 @@ import db_interface.songs as songs
 import db_interface.bonds as bonds
 
 import bot_item.keyboards as kb
+import config.ids as ids
+
 from bot_item.keyboards import decoding_page_callback
 from api.lyrics_search import get_line_by_id
 from api.music_yandex import (get_day_song,
@@ -45,6 +46,7 @@ from api.music_yandex import (get_day_song,
 from bot_item.make_message import *
 from config.phrases import phrases
 
+
 try:
     bot: Bot = Bot(token=__TELEGRAM_BOT_TOKEN, parse_mode='HTML')
 except Exception:
@@ -54,6 +56,7 @@ except Exception:
 
 class Settings(StatesGroup):
     icon = State()
+
 
 async def get_editors():
     return [editor.user.id
@@ -112,10 +115,10 @@ class IsSuperAdmin(BaseFilter):
 
 
 async def sent_from_list(message: Message, keyword: str, keyboard=None):
-    await message.answer(
-        phrases[keyword][randint(0, len(phrases[keyword]) - 1)],
-        reply_markup=keyboard
-    )
+    if keyboard:
+        await message.answer(phrases[keyword][randint(0, len(phrases[keyword]) - 1)], reply_markup=keyboard)
+        return
+    await message.answer(phrases[keyword][randint(0, len(phrases[keyword]) - 1)], reply_markup=kb.main)
 
 
 def command_with_arguments(func):
@@ -163,10 +166,17 @@ def command_with_artist_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         artist_id = args[0]
-        if not artists.is_exists(artist_id):
+        if len(artist_id) > 3:
+            await message.answer(phrases['error']['long_argument_3'], reply_markup=kb.main)
+            return
+        artist_id = ids.decoding(artist_id)
+        if len(artist_id) < 1:
             await message.answer(phrases['error']['artist_not_exist'], reply_markup=kb.main)
             return
-        await func(message, artist_id)
+        if artist_id[0] > artists.count():
+            await message.answer(phrases['error']['artist_not_exist'], reply_markup=kb.main)
+            return
+        await func(message, artist_id[:1])
     return wrapper
 
 
@@ -174,10 +184,17 @@ def command_with_album_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         album_id = args[0]
-        if not albums.is_exists(album_id):
+        if len(album_id) > 6:
+            await message.answer(phrases['error']['long_argument_6'], reply_markup=kb.main)
+            return
+        album_id = ids.decoding(album_id)
+        if len(album_id) < 2:
             await message.answer(phrases['error']['album_not_exist'], reply_markup=kb.main)
             return
-        await func(message, album_id)
+        if album_id[0] > artists.count() or album_id[1] > albums.count():
+            await message.answer(phrases['error']['album_not_exist'], reply_markup=kb.main)
+            return
+        await func(message, album_id[:2])
     return wrapper
 
 
@@ -185,10 +202,17 @@ def command_with_song_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         song_id = args[0]
-        if not songs.is_exists(song_id):
+        if len(song_id) > 9:
+            await message.answer(phrases['error']['long_argument_9'], reply_markup=kb.main)
+            return
+        song_id = ids.decoding(song_id)
+        if len(song_id) < 3:
             await message.answer(phrases['error']['song_not_exist'], reply_markup=kb.main)
             return
-        await func(message, song_id)
+        if song_id[0] > artists.count() or song_id[1] > albums.count() or song_id[2] > songs.count():
+            await message.answer(phrases['error']['song_not_exist'], reply_markup=kb.main)
+            return
+        await func(message, song_id[:3])
     return wrapper
 
 

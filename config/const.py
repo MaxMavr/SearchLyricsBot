@@ -44,6 +44,8 @@ USERS_PAGE_SIZE = 20
 
 EMBEDDING_MODEL = "ai-forever/ru-en-RoSBERTa"
 
+BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 YANDEX_LINK_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/\d+'
 YANDEX_SONG_ID_PATTERN = r'https://music\.yandex\.ru/album/\d+/track/(\d+)'
 LINK_PATTERN = r'https://'

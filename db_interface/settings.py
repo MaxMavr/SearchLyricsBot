@@ -30,6 +30,7 @@ def __create():
                 bool_show_footnote BOOLEAN NOT NULL DEFAULT TRUE,
                 bool_show_feat BOOLEAN NOT NULL DEFAULT TRUE,
                 bool_show_link BOOLEAN NOT NULL DEFAULT TRUE,
+                bool_suggest BOOLEAN NOT NULL DEFAULT TRUE,
                 FOREIGN KEY (id) REFERENCES users(id)
             )''')
         cursor.close()
@@ -97,7 +98,8 @@ def get(user_id: int):
                                  bool_show_date,
                                  bool_show_img,
                                  bool_show_song,
-                                 bool_show_feat FROM settings WHERE id = ?''', (user_id,))
+                                 bool_show_feat,
+                                 bool_suggest FROM settings WHERE id = ?''', (user_id,))
         values = cursor.fetchone()
         names = [description[0] for description in cursor.description]
         return __preprocessing(dict(zip(names, values)))
@@ -176,6 +178,13 @@ def get_for_kb(user_id: int):
         for name, value in settings_items.items():
             settings_items[name] = settings_items[name].replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
         return settings_items
+
+
+def is_suggested(user_id: int):
+    with sqlite3.connect(USERS_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT bool_suggest FROM settings WHERE id = ?', (user_id,))
+        return cursor.fetchone()[0] > 0
 
 
 def upd_bool(user_id: int, suffix: str):

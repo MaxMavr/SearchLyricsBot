@@ -26,12 +26,12 @@ async def call_cancel(callback: CallbackQuery):
 
 @rt.message(IsNotAdmitted())
 async def catch_admit(message: Message):
-    await sent_from_list(message, 'stat_ban')
+    await sent_from_list(message, 'stat_not_admit')
 
 
 @rt.message(IsBaned())
 async def catch_ban(message: Message):
-    await sent_from_list(message, 'stat_not_admit')
+    await sent_from_list(message, 'stat_ban')
 
 # - - - - - - - - Сверху стандартные функции, снизу приколы - - - - - - - -
 
@@ -42,7 +42,7 @@ async def catch_settings(message: Message):
 
 
 @rt.message(Command(commands='settings'))  # /settings
-async def cmd_artists(message: Message):
+async def cmd_settings(message: Message):
     await catch_settings(message)
 
 
@@ -112,12 +112,52 @@ async def cmd_format(message: Message, args):
     else:
         msg_text = make_song_lyrics_message(lines=groups[0])
 
-    if await IsEditor.check(message.from_user.id):
-        await message.answer(text=msg_text, reply_markup=kb.publish_post, disable_web_page_preview=True)
+    if settings.is_suggested(message.from_user.id):
+        if await IsEditor.check(message.from_user.id):
+            await message.answer(text=msg_text, reply_markup=kb.publish_post, disable_web_page_preview=True)
+        else:
+            await message.answer(text=msg_text, reply_markup=kb.suggest_post, disable_web_page_preview=True)
     else:
-        await message.answer(text=msg_text, reply_markup=kb.suggest_post, disable_web_page_preview=True)
+        await message.answer(text=msg_text, disable_web_page_preview=True)
 
 
 @rt.callback_query(F.data == 'pass')
 async def call_cancel(callback: CallbackQuery):
-    await callback.answer(reply_markup=kb.main)\
+    await callback.answer(reply_markup=kb.main)
+
+# - - - - - - - - Псевдоним команд - - - - - - - -
+
+
+@rt.message(Command(commands='sr'))  # /sr (start)
+async def alias_cmd_artists(message: Message):
+    await cmd_start(message)
+
+
+@rt.message(Command(commands='st'))  # /st (settings)
+async def alias_cmd_settings(message: Message):
+    await catch_settings(message)
+
+
+@rt.message(Command(commands='ab'))  # /ab (about)
+async def alias_cmd_about(message: Message):
+    await cmd_about(message)
+
+
+@rt.message(Command(commands='h'))  # /h (help)
+async def alias_cmd_help(message: Message):
+    await cmd_help(message)
+
+
+@rt.message(Command(commands='am'))  # /am (agreement)
+async def alias_cmd_agreement(message: Message):
+    await cmd_agreement(message)
+
+
+@rt.message(Command(commands='d'))  # /ds (day_song)
+async def alias_cmd_day_song(message: Message):
+    await cmd_day_song(message)
+
+
+@rt.message(Command(commands='f'))  # /f (format)
+async def alias_cmd_format(message: Message):
+    await cmd_format(message)

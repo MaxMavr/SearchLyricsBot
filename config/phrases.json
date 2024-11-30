@@ -119,7 +119,10 @@
       "bool_show_footnote_True": "ℹ️ Показать подсказки",
       "bool_show_footnote_False": "ℹ️ Скрыть подсказки",
       "bool_show_link_True": "\uD83C\uDF10 Показать ссылки",
-      "bool_show_link_False": "\uD83C\uDF10 Скрыть ссылки"
+      "bool_show_link_False": "\uD83C\uDF10 Скрыть ссылки",
+
+      "bool_suggest_True": "\uD83E\uDE84 Предлагать",
+      "bool_suggest_False": "\uD83E\uDE84 Не предлагать"
     }
   },
 
@@ -127,6 +130,9 @@
     "empty_argument":         "⚠️ Ты не передал аргумент команды",
     "empty_newline_argument": "⚠️ Ты не передал аргумент команды, нужно передавать с нового строки",
     "long_argument_icon":     "⚠️ Слишком длинное сообщение, нужно передать до 3 символов или эмодзи",
+    "long_argument_3":        "⚠️ Слишком длинный аргумент, нужно передать до 3 символов",
+    "long_argument_6":        "⚠️ Слишком длинный аргумент, нужно передать до 6 символов",
+    "long_argument_9":        "⚠️ Слишком длинный аргумент, нужно передать до 9 символов",
     "lot_of_arguments_3":     "⚠️ Ты передал очень много аргументов, максимум три штуки",
     "not_digit":              "⚠️ Аргумент команды не число",
     "is_not_link":            "⚠️ Нужно передать ссылку",
@@ -139,7 +145,7 @@
     "album_not_exist":        "⚠️ Альбома не существует",
     "song_not_exist":         "⚠️ Песни не существует",
 
-    "empty_lyrics":           "Тут ничего нет\n(._.)"
+    "empty_lyrics":           "Не смогли добыть текст\n(._.)"
   },
 
   "settings": {
@@ -166,7 +172,8 @@
         "bool_show_img": true,
         "bool_show_song": true,
         "bool_show_footnote": true,
-        "bool_show_link": true
+        "bool_show_link": true,
+        "bool_suggest": true
       },
 
       "ascii": {
@@ -191,7 +198,8 @@
         "bool_show_img": false,
         "bool_show_song": true,
         "bool_show_footnote": true,
-        "bool_show_link": false
+        "bool_show_link": false,
+        "bool_suggest": true
       },
 
       "clear": {
@@ -216,7 +224,8 @@
         "bool_show_img": false,
         "bool_show_song": false,
         "bool_show_footnote": false,
-        "bool_show_link": false
+        "bool_show_link": false,
+        "bool_suggest": false
       }
     },
 
@@ -241,7 +250,8 @@
       "bool_show_song": "\uD83C\uDFB5 Отсылать песню с текстом?\n",
       "bool_show_feat": "\uD83C\uDD9A Показать имена исполнителей, с которыми записан фит?\n",
       "bool_show_footnote": "ℹ️ Показать подсказки?\n",
-      "bool_show_link": "\uD83C\uDF10 Показать ссылки на Яндекс Музыку?\n"
+      "bool_show_link": "\uD83C\uDF10 Показать ссылки на Яндекс Музыку?\n",
+      "bool_suggest": "\uD83E\uDE84 Предлагать выложить пост?\n"
     },
 
     "popup": {
@@ -260,7 +270,9 @@
       "bool_show_footnote_True": "Показываем подсказки",
       "bool_show_footnote_False": "Никаких подсказок для опытного юзера",
       "bool_show_link_True": "Показываем ссылки",
-      "bool_show_link_False": "Теперь всё без ссылок"
+      "bool_show_link_False": "Теперь всё без ссылок",
+      "bool_suggest_True": "Предложим",
+      "bool_suggest_False": "Не будем докучать"
     }
   },
 

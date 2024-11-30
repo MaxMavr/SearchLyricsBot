@@ -9,12 +9,43 @@ rt: Router = Router()
 #  Команда /clear_temp — очистить временные файлы (песенки)
 #  Команда /... — Забрать song_info.db
 #  Команда /... — обновить song_info.db
+#  Написать Псевдонимы команд
 #
 
 
 @rt.message(Command(commands='users'), IsAdmin())  # /users
 async def cmd_users(message: Message):
     await pg.make_users(message, 1)
+
+
+@rt.message(Command(commands='raw'), IsAdmin())  # /raw
+async def cmd_users(message: Message):
+    # await
+    pass
+
+
+@rt.message(Command(commands='addraw'), IsAdmin())  # /addraw
+async def cmd_users(message: Message):
+    # await
+    pass
+
+
+@rt.message(Command(commands='delraw'), IsAdmin())  # /delraw
+async def cmd_users(message: Message):
+    # await
+    pass
+
+
+@rt.message(Command(commands='err'), IsAdmin())  # /err
+async def cmd_users(message: Message):
+    # await
+    pass
+
+
+@rt.message(Command(commands='clear_temp'), IsAdmin())  # /clear_temp
+async def cmd_users(message: Message):
+    # await
+    pass
 
 
 @rt.message(Command(commands='promote'), IsSuperAdmin())  # /promote
