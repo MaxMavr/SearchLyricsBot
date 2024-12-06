@@ -1,5 +1,5 @@
 from os.path   import dirname, isfile
-from os        import listdir, remove, makedirs, getenv
+from os        import listdir, remove
 from re        import search
 from math      import ceil
 from typing    import Union, List, Tuple, Callable, Coroutine
@@ -22,7 +22,8 @@ from config.const import (MAIN_ADMIN_ID,
                           YANDEX_LINK_PATTERN,
                           YANDEX_SONG_ID_PATTERN,
                           LINK_PATTERN,
-                          IMG_LOGOS_FILE)
+                          IMG_LOGOS_FILE,
+                          TEMP_DIR)
 
 import db_interface.users as users
 import db_interface.settings as settings
@@ -56,6 +57,7 @@ except Exception:
 
 class Settings(StatesGroup):
     icon = State()
+    allicon = State()
 
 
 async def get_editors():

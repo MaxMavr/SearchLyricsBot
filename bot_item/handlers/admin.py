@@ -48,6 +48,13 @@ async def cmd_users(message: Message):
     pass
 
 
+@rt.message(Command(commands='clear_temp'), IsAdmin())  # /clear_temp
+async def cmd_users(message: Message):
+    # await
+    for file in listdir(TEMP_DIR):
+        remove(file)
+
+
 @rt.message(Command(commands='promote'), IsSuperAdmin())  # /promote
 @command_with_user_id_argument
 async def cmd_promote(message: Message, user_id):
@@ -87,7 +94,7 @@ async def cmd_artists(message: Message, user_id):
     await message.answer(text=phrases['unban'], reply_markup=kb.main)
 
 
-@rt.callback_query(F.data.startswith('clear_'), IsAdmin())
+@rt.callback_query(F.data.startswith('clear_'))
 async def catch_clear(callback: CallbackQuery):
     user_id = int(callback.data.replace('clear_', ''))
     settings.delete(user_id)
@@ -95,7 +102,7 @@ async def catch_clear(callback: CallbackQuery):
     await callback.message.answer(text=phrases['clear'], reply_markup=kb.main)
 
 
-@rt.callback_query(F.data.startswith('pageUSERS_'), IsAdmin())
+@rt.callback_query(F.data.startswith('pageUSERS_'))
 async def catch_goto_page_song_info(callback: CallbackQuery):
     page_number = int(callback.data.replace('pageUSERS_', ''))
     await pg.make_users(callback, page_number)

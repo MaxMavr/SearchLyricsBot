@@ -295,6 +295,7 @@ async def make_song(event: Union[Message, CallbackQuery], select_vector: List[in
             msg = await event.answer(text=page_text, reply_markup=page_kb)
             await msg.edit_media(media=InputMediaAudio(media=FSInputFile(song, filename=f'{artists_title} - {song_title}'),
                                                        caption=page_text), reply_markup=page_kb)
+            remove(song)
             return
         await event.answer(text=page_text, reply_markup=page_kb)
         return
@@ -303,6 +304,7 @@ async def make_song(event: Union[Message, CallbackQuery], select_vector: List[in
         await event.message.edit_media(
             media=InputMediaAudio(media=FSInputFile(song, filename=f'{artists_title} - {song_title}'),
                                   caption=page_text), reply_markup=page_kb)
+        remove(song)
         return
 
     if event.message.photo or event.message.audio:
@@ -352,31 +354,34 @@ async def make_users(event: Union[Message, CallbackQuery], select_number: int):
             reply_markup=page_kb)
 
 
-async def make_settings(event: Union[Message, CallbackQuery]):
+async def make_settings(event: Union[Message, CallbackQuery], page_mode: str = 'bool'):
     await init_page(event)
     settings_items = settings.get(event.from_user.id)
 
     page_text = phrases['title']['settings']
-    page_text += phrases['title']['settings_icon']
-    for name, value in settings_items.items():
-        if str(name).startswith('icon_'):
-            page_text += f'{value} '
-            page_text += phrases['settings']['description'][name]
 
-    page_text += phrases['title']['settings_bool']
-    for name, value in settings_items.items():
-        if str(name).startswith('bool_'):
-            if value:
-                page_text += phrases['icon_choice']
-            else:
-                page_text += phrases['icon_not_choice']
-            page_text += phrases['settings']['description'][name]
+    if page_mode == 'icon':
+        page_text += phrases['title']['settings_icon']
+        for name, value in settings_items.items():
+            if str(name).startswith('icon_'):
+                page_text += f'{value} '
+                page_text += phrases['settings']['description'][name]
 
-    page_text += phrases['title']['settings_presets']
-    for i, preset in enumerate(phrases['settings']['presets']):
-        page_text += f'{i + 1}. ' + phrases['settings']['presets'][preset]['title'] + '\n'
+    if page_mode == 'bool':
+        page_text += phrases['title']['settings_bool']
+        for name, value in settings_items.items():
+            if str(name).startswith('bool_'):
+                if value:
+                    page_text += phrases['icon_choice']
+                else:
+                    page_text += phrases['icon_not_choice']
+                page_text += phrases['settings']['description'][name]
 
-    page_kb = kb.make_settings(settings_items)
+        page_text += phrases['title']['settings_presets']
+        for i, preset in enumerate(phrases['settings']['presets']):
+            page_text += f'{i + 1}. ' + phrases['settings']['presets'][preset]['title'] + '\n'
+
+    page_kb = kb.make_settings(settings_items, page_mode)
 
     if isinstance(event, Message):
         await event.answer(text=page_text, reply_markup=page_kb)

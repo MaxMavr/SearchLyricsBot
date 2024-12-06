@@ -205,27 +205,39 @@ def make_users(page_number: int, max_page: int, icons):
     return kb.adjust(2).as_markup(resize_keyboard=True)
 
 
-def make_settings(settings_items: dict):
+def make_settings(settings_items: dict, page_mode: str):
     icon_kb = []
-    for name, value in settings_items.items():
-        if name.startswith('icon_'):
-            icon_kb.append(IButton(text=value.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&'),
-                                   callback_data=f'settings_{name}'))
+    if page_mode == 'icon':
+        for name, value in settings_items.items():
+            if name.startswith('icon_'):
+                icon_kb.append(IButton(text=value.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&'),
+                                       callback_data=f'settings_{name}'))
+        icon_kb = [icon_kb[i:i + 3] for i in range(0, len(icon_kb), 3)]
+        icon_kb += [[IButton(text=phrases['button']['settings']['allicon'], callback_data=f'settings_allicon')]]
 
     bool_kb = []
-    for name, value in settings_items.items():
-        if name.startswith('bool_'):
-            bool_kb.append(IButton(text=phrases['button']['settings'][f'{name}_{not value}'],
-                                   callback_data=f'settings_{name}_{not value}'))
-
     set_kb = []
-    for name, set_set in phrases['settings']['presets'].items():
-        set_kb.append(IButton(text=set_set['title'],
-                              callback_data=f'settings_preset_{name}'))
+    if page_mode == 'bool':
+        for name, value in settings_items.items():
+            if name.startswith('bool_'):
+                bool_kb.append(IButton(text=phrases['button']['settings'][f'{name}_{not value}'],
+                                       callback_data=f'settings_{name}_{not value}'))
+        bool_kb = [bool_kb[i:i + 2] for i in range(0, len(bool_kb), 2)]
 
-    kb = [icon_kb[i:i + 3] for i in range(0, len(icon_kb), 3)]
-    kb += [[b] for b in bool_kb]
-    kb += [set_kb[i:i + 3] for i in range(0, len(set_kb), 3)]
+        for name, set_set in phrases['settings']['presets'].items():
+            set_kb.append(IButton(text=set_set['title'],
+                                  callback_data=f'settings_preset_{name}'))
+
+        set_kb = [set_kb[i:i + 3] for i in range(0, len(set_kb), 3)]
+
+    kb = icon_kb
+    kb += bool_kb
+    kb += set_kb
+
+    if page_mode == 'icon':
+        kb += [[IButton(text=settings_items['icon_past_page'] + phrases['button']['past_page'], callback_data='pageSET_bool')]]
+    if page_mode == 'bool':
+        kb += [[IButton(text=phrases['button']['next_page'] + settings_items['icon_next_page'], callback_data='pageSET_icon')]]
 
     return IMarkup(inline_keyboard=kb)
 
