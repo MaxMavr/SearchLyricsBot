@@ -125,6 +125,7 @@ async def cmd_format(message: Message, args):
 async def call_cancel(callback: CallbackQuery):
     await callback.answer(reply_markup=kb.main)
 
+
 # - - - - - - - - Псевдоним команд - - - - - - - -
 
 
@@ -148,12 +149,12 @@ async def alias_cmd_help(message: Message):
     await cmd_help(message)
 
 
-@rt.message(Command(commands='am'))  # /am (agreement)
+@rt.message(Command(commands='ag'))  # /ag (agreement)
 async def alias_cmd_agreement(message: Message):
     await cmd_agreement(message)
 
 
-@rt.message(Command(commands='d'))  # /ds (day_song)
+@rt.message(Command(commands='ds'))  # /ds (day_song)
 async def alias_cmd_day_song(message: Message):
     await cmd_day_song(message)
 

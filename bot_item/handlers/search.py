@@ -1,5 +1,5 @@
 from config.bot import *
-from embedding.calculating_embeddings import search_lines
+from embedding.calculating_embeddings import search_line
 import bot_item.page as pg
 rt: Router = Router()
 
@@ -35,35 +35,25 @@ async def cmd_song(message: Message, song_id):
     await pg.make_album(event=message, select_vector=select_vector)
 
 
-@rt.message(Command(commands=comp(r'search(\d{0, 2})')))  # /search
+@rt.message(Command(commands='search'))  # /search
 @command_with_arguments
 async def cmd_search(message: Message, args):
-    quantity = search(r'search(\d{0,2})', message.text)
-    if not quantity:
-        quantity = 1
-    else:
-        quantity = int(quantity.group(1))
-        if quantity > MAX_SEARCH_NUMBER:
-            quantity = MAX_SEARCH_NUMBER
-
     query = ' '.join(args)
-    song_line_id = await search_lines(query, quantity)
-    msg_text = []
-    for (song_id, line_id) in song_line_id:
-        line = await get_line_by_id(song_id, line_id)
-        _, album_id, _ = bonds.get_ids_by_song(song_id)
-        link = make_yandex_song_link(song_id, album_id)
-        artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id)])
-        song_title = songs.get_title(song_id)
-        msg_text.append(make_song_lyrics_message(song=song_title, artist=artists_title, link=link, lines=line))
+    song_id, line_id = await search_line(query)
+    line = (await get_line_by_id(song_id, line_id))
+    _, album_id, _ = bonds.get_ids_by_song(song_id)
+    link = make_yandex_song_link(song_id, album_id)
+    artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id)])
+    _, song_title, _, _, _ = songs.get(song_id)
+    msg_text = make_song_lyrics_message(song=song_title, artist=artists_title, link=link, lines=line)
 
-    if settings.is_suggested(message.from_user.id) and quantity == 1:
+    if settings.is_suggested(message.from_user.id):
         if await IsEditor.check(message.from_user.id):
-            await message.answer(text=''.join(msg_text), reply_markup=kb.publish_post, disable_web_page_preview=True)
+            await message.answer(text=msg_text, reply_markup=kb.publish_post, disable_web_page_preview=True)
         else:
-            await message.answer(text=''.join(msg_text), reply_markup=kb.suggest_post, disable_web_page_preview=True)
+            await message.answer(text=msg_text, reply_markup=kb.suggest_post, disable_web_page_preview=True)
     else:
-        await message.answer(text=''.join(msg_text), disable_web_page_preview=True, reply_markup=kb.main)
+        await message.answer(text=msg_text, disable_web_page_preview=True)
 
 
 @rt.callback_query(F.data.startswith('pageSI_'))

@@ -39,13 +39,6 @@ def get(song_id: str) -> tuple:
         return cursor.fetchone()
 
 
-def get_title(song_id: str) -> str:
-    with sqlite3.connect(SONG_INFO_DB) as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT title FROM songs WHERE id = ?', (song_id,))
-        return cursor.fetchone()[0]
-
-
 def get_by_title(song_title: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
@@ -92,9 +85,9 @@ def get_for_embedded(start_page_number: int = 0, page_size: int = 20):
     max_page_number = ceil(count_with_text() / page_size)
 
     with sqlite3.connect(SONG_INFO_DB) as conn:
-        for page_number in range(start_page_number, max_page_number):
+        for page_number in range(start_page_number, max_page_number + 1):
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM songs WHERE have_text = 1 AND embedded = 0 LIMIT ? OFFSET ?',
+            cursor.execute('SELECT * FROM songs WHERE have_text = 1 LIMIT ? OFFSET ?',
                            (page_size, page_number * page_size))
             for song in cursor.fetchall():
                 yield song
