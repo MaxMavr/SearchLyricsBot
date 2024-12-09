@@ -1,6 +1,7 @@
 from os.path   import dirname, isfile
 from os        import listdir, remove
-from re        import search
+from re        import search, findall
+from re        import compile as comp
 from math      import ceil
 from typing    import Union, List, Tuple, Callable, Coroutine
 from random    import randint
@@ -23,7 +24,8 @@ from config.const import (MAIN_ADMIN_ID,
                           YANDEX_SONG_ID_PATTERN,
                           LINK_PATTERN,
                           IMG_LOGOS_FILE,
-                          TEMP_DIR)
+                          TEMP_DIR,
+                          MAX_SEARCH_NUMBER)
 
 import db_interface.users as users
 import db_interface.settings as settings
