@@ -39,6 +39,13 @@ def get(song_id: str) -> tuple:
         return cursor.fetchone()
 
 
+def get_title(song_id: str) -> str:
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT title FROM songs WHERE id = ?', (song_id,))
+        return cursor.fetchone()[0]
+
+
 def get_by_title(song_title: str) -> tuple:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()

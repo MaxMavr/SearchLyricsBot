@@ -29,7 +29,7 @@ async def song_lines_to_embeddings(song_id: str, song_title: str, collection):
     print(f"{song_title.ljust(40)} :: SUCCESS!   ({round(time.time() - start_time, 3)})")
 
 
-async def search_line(query: str) -> Tuple[str, int]:
+async def search_lines(query: str, quantity: int) -> List[Tuple[str, int]]:
     __client = await chromadb.AsyncHttpClient(
         host='localhost',
         port=8000,
@@ -42,7 +42,7 @@ async def search_line(query: str) -> Tuple[str, int]:
 
     result = await collection.query(
         query_embeddings=[embedded_query],
-        n_results=1,
+        n_results=quantity,
         # where={"metadata_field": "is_equal_to_this"},
         # where_document={"$contains": "search_string"}
     )

@@ -4,7 +4,7 @@ import time
 import torch
 import chromadb
 import numpy as np
-from typing import Tuple
+from typing import Tuple, List
 
 from sentence_transformers import SentenceTransformer
 from chromadb.errors import InvalidCollectionException
