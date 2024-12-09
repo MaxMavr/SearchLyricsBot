@@ -47,7 +47,10 @@ async def search_lines(query: str, quantity: int) -> List[Tuple[str, int]]:
         # where_document={"$contains": "search_string"}
     )
 
-    return split_vector_id(result['ids'][0][0])
+    res = []
+    for i in result['ids'][0]:
+        res.append(split_vector_id(i))
+    return res
 
 
 
@@ -72,5 +75,5 @@ async def main  ():
 
 
 if __name__ == "__main__":
-    asyncio.run(search_line("Плавит в городе"))
-    # asyncio.run(main())
+    # asyncio.run(search_line("Плавит в городе"))
+    asyncio.run(main())

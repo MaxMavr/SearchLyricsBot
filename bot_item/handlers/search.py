@@ -35,16 +35,19 @@ async def cmd_song(message: Message, song_id):
     await pg.make_album(event=message, select_vector=select_vector)
 
 
-@rt.message(Command(commands=comp(r'search(\d{0, 2})')))  # /search
+@rt.message(Command(commands=comp(r'search(\d{0,2})')))  # /search
 @command_with_arguments
 async def cmd_search(message: Message, args):
     quantity = search(r'search(\d{0,2})', message.text)
-    if not quantity:
+
+    quantity = quantity.group(1)
+    if quantity == '':
         quantity = 1
     else:
-        quantity = int(quantity.group(1))
-        if quantity > MAX_SEARCH_NUMBER:
-            quantity = MAX_SEARCH_NUMBER
+        quantity = int(quantity)
+
+    if quantity > MAX_SEARCH_NUMBER:
+        quantity = MAX_SEARCH_NUMBER
 
     query = ' '.join(args)
     song_line_id = await search_lines(query, quantity)
@@ -56,6 +59,7 @@ async def cmd_search(message: Message, args):
         artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id)])
         song_title = songs.get_title(song_id)
         msg_text.append(make_song_lyrics_message(song=song_title, artist=artists_title, link=link, lines=line))
+        msg_text.append('\n\n\n')
 
     if settings.is_suggested(message.from_user.id) and quantity == 1:
         if await IsEditor.check(message.from_user.id):
