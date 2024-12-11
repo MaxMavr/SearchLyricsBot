@@ -5,7 +5,7 @@ from api.lyrics_search import get_song_lines
 from db_interface.songs import get_for_embedded, upd_embed_status
 from db_interface.vectors import make_vector_id, split_vector_id
 
-__model = SentenceTransformer(EMBEDDING_MODEL, device='cuda')
+__model = SentenceTransformer(EMBEDDING_MODEL)
 
 
 async def line_to_embedding(line: str):
