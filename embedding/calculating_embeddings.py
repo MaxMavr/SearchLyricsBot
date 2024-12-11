@@ -5,12 +5,14 @@ from api.lyrics_search import get_song_lines
 from db_interface.songs import get_for_embedded, upd_embed_status
 from db_interface.vectors import make_vector_id, split_vector_id
 
-
 __model = SentenceTransformer(EMBEDDING_MODEL, device='cuda')
 
 
 async def line_to_embedding(line: str):
-    line_embedding = __model.encode(line, device='cuda')
+    if torch.cuda.is_available():
+        line_embedding = __model.encode(line, device='cuda')
+    else:
+        line_embedding = __model.encode(line)
 
     return line_embedding
 
