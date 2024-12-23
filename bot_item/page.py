@@ -2,7 +2,8 @@ from config.page import *
 from config.const import (ARTISTS_PAGE_SIZE,
                           ALBUM_PAGE_SIZE,
                           ARTIST_PAGE_SIZE,
-                          USERS_PAGE_SIZE)
+                          USERS_PAGE_SIZE,
+                          QUERY_PAGE_SIZE)
 import time
 
 
@@ -315,10 +316,10 @@ async def make_song(event: Union[Message, CallbackQuery], select_vector: List[in
     await event.message.edit_text(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)
 
 
-async def make_users(event: Union[Message, CallbackQuery], select_number: int):
+async def make_users(event: Union[Message, CallbackQuery], page_number: int):
     await init_page(event)
 
-    page = users.get_by_page(select_number, USERS_PAGE_SIZE)
+    page = users.get_by_page(page_number, USERS_PAGE_SIZE)
     max_page_number = calculate_page_number(users.count(), USERS_PAGE_SIZE)
     page_text = [phrases['title']['users']]
 
@@ -337,10 +338,10 @@ async def make_users(event: Union[Message, CallbackQuery], select_number: int):
                 page_text.append(f'@{username}')
         page_text.append('\n')
 
-    page_text.append(make_page_counter(select_number, max_page_number))
+    page_text.append(make_page_counter(page_number, max_page_number))
 
     page_text = ''.join(page_text)
-    page_kb = kb.make_users(select_number,
+    page_kb = kb.make_users(page_number,
                             max_page_number,
                             settings.get_for_kb(event.from_user.id))
 
@@ -387,3 +388,31 @@ async def make_settings(event: Union[Message, CallbackQuery], page_mode: str = '
         await event.answer(text=page_text, reply_markup=page_kb)
         return
     await event.message.edit_text(text=page_text, reply_markup=page_kb)
+
+
+async def make_query(event: Union[Message, CallbackQuery], page_number: int):
+    await init_page(event)
+
+    page = query.get_by_page(page_number, QUERY_PAGE_SIZE)
+    quantity = query.count()
+    max_page_number = calculate_page_number(quantity, QUERY_PAGE_SIZE)
+
+    page_text = [phrases['title']['query']]
+
+    for i in range(QUERY_PAGE_SIZE):
+        if i < len(page):
+            username, prompt, answer = page[i]
+            page_text.append(f'@{username}\n<blockquote>{prompt}\n\n{answer}</blockquote>\n')
+        page_text.append('\n')
+
+    page_text.append(make_page_counter(page_number, max_page_number))
+
+    page_text = ''.join(page_text)
+    page_kb = kb.make_query(page_number,
+                            max_page_number,
+                            settings.get_for_kb(event.from_user.id))
+
+    if isinstance(event, Message):
+        await event.answer(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)
+        return
+    await event.message.edit_text(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)

@@ -205,6 +205,16 @@ def make_users(page_number: int, max_page: int, icons):
     return kb.adjust(2).as_markup(resize_keyboard=True)
 
 
+def make_query(page_number: int, max_page: int, icons):
+    kb = IBuilder()
+
+    if page_number != 1:
+        kb.button(text=icons['icon_past_page'] + phrases['button']['past_page'], callback_data=f'pageQUERY_{page_number - 1}')
+    if page_number < max_page:
+        kb.button(text=phrases['button']['next_page'] + icons['icon_next_page'], callback_data=f'pageQUERY_{page_number + 1}')
+    return kb.adjust(2).as_markup(resize_keyboard=True)
+
+
 def make_settings(settings_items: dict, page_mode: str):
     icon_kb = []
     if page_mode == 'icon':

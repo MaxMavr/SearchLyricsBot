@@ -18,6 +18,7 @@ SONG_INFO_DB = __DB_DIR + '/song_info.db'
 NODES_DB = __DB_DIR + '/nodes.db'
 VECTORS_DB = __DB_DIR + '/vectors.vdb'
 USERS_DB = __DB_DIR + '/users.db'
+QUERY_DB = __DB_DIR + '/query.db'
 
 PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
 IMG_NULL_FILE = ASSETS_DIR + '/null.png'
@@ -39,8 +40,8 @@ MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', '
 ARTISTS_PAGE_SIZE = 10
 ARTIST_PAGE_SIZE = 10
 ALBUM_PAGE_SIZE = 10
-
 USERS_PAGE_SIZE = 20
+QUERY_PAGE_SIZE = 10
 
 MAX_SEARCH_NUMBER = 10
 

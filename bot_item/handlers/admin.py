@@ -18,6 +18,11 @@ async def cmd_users(message: Message):
     await pg.make_users(message, 1)
 
 
+@rt.message(Command(commands='query'), IsAdmin())  # /query
+async def cmd_query(message: Message):
+    await pg.make_query(message, 1)
+
+
 @rt.message(Command(commands='raw'), IsAdmin())  # /raw
 async def cmd_users(message: Message):
     # await
@@ -106,3 +111,9 @@ async def catch_clear(callback: CallbackQuery):
 async def catch_goto_page_song_info(callback: CallbackQuery):
     page_number = int(callback.data.replace('pageUSERS_', ''))
     await pg.make_users(callback, page_number)
+
+
+@rt.callback_query(F.data.startswith('pageQUERY_'))
+async def catch_goto_page_song_info(callback: CallbackQuery):
+    page_number = int(callback.data.replace('pageQUERY_', ''))
+    await pg.make_query(callback, page_number)

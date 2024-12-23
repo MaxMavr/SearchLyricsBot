@@ -42,17 +42,17 @@ async def search_lines(query: str, quantity: int) -> List[Tuple[str, int]]:
 
     embedded_query = await line_to_embedding(query)
 
-    result = await collection.query(
+    ids = await collection.query(
         query_embeddings=[embedded_query],
         n_results=quantity,
         # where={"metadata_field": "is_equal_to_this"},
         # where_document={"$contains": "search_string"}
     )
 
-    res = []
-    for i in result['ids'][0]:
-        res.append(split_vector_id(i))
-    return res
+    song_line_ids = []
+    for i in ids['ids'][0]:
+        song_line_ids.append(split_vector_id(i))
+    return song_line_ids
 
 
 

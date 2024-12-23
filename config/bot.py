@@ -34,6 +34,7 @@ import db_interface.artists as artists
 import db_interface.albums as albums
 import db_interface.songs as songs
 import db_interface.bonds as bonds
+import db_interface.query as query
 
 import bot_item.keyboards as kb
 import config.ids as ids
