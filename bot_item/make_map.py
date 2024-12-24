@@ -270,6 +270,8 @@ def make_map(emo_dict: dict) -> str:
     size = img.size
     img_cnv = ImageDraw.Draw(img)
 
+    # max(emo_dict, key=emo_dict.get)
+
     def draw_ellipse(centre_xy: Tuple[int, int], color: str):
         img_cnv.ellipse((
             centre_xy[0] - DRAW_MAX_RADIUS,
@@ -303,11 +305,6 @@ def make_map(emo_dict: dict) -> str:
             coord = (radius * sin(angle) + size[0] // 2, radius * cos(angle) + size[1] // 2)
             coord_rang3.append(coord)
             coord_emo[emo] = coord
-
-        print(round(angle, 3))
-        print(round(sin(angle), 3))
-        print(round(cos(angle), 3))
-        print()
 
     img_cnv.polygon(xy=coord_rang1, fill='blue', outline=(0, 0, 0))
     img_cnv.polygon(xy=coord_rang2, fill='blue', outline=(0, 0, 0))

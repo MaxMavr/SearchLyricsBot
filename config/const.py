@@ -19,6 +19,7 @@ NODES_DB = __DB_DIR + '/nodes.db'
 VECTORS_DB = __DB_DIR + '/vectors.vdb'
 USERS_DB = __DB_DIR + '/users.db'
 QUERY_DB = __DB_DIR + '/query.db'
+EMOTIONS_DB = __DB_DIR + '/emotions.db'
 
 PHRASES_FILE = __CONFIG_DIR + '/phrases.json'
 IMG_NULL_FILE = ASSETS_DIR + '/null.png'

@@ -22,13 +22,6 @@ async def cmd_query(message: Message):
     await pg.make_query(message, 1)
 
 
-@rt.message(Command(commands='take_gut'), IsAdmin())  # /take_gut
-async def cmd_users(message: Message):
-    for file in listdir(TEMP_DIR):
-        remove(file)
-    await message.answer(phrases['clear_temp'])
-
-
 @rt.message(Command(commands='clear_temp'), IsAdmin())  # /clear_temp
 async def cmd_users(message: Message):
     await message.answer(phrases['clear_temp'])
