@@ -124,3 +124,8 @@ def __make_parent_button(select_vector: List[int], suffix: Suffix, icons: dict):
         return __make_button(icons['icon_parent'] + phrases['button'][suffix.text]['parent'],
                              __make_page_callback_data(suffix.parent, select_vector))
     return NULL_BUTTON
+
+
+def __make_analytics_button(song_id: str, icons: dict):
+    return IMarkup(inline_keyboard=[[IButton(text=icons['icon_parent'] + phrases['button']['show_analytics'],
+                                             callback_data=f'anal_{song_id}')]])

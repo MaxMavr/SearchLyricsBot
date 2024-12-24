@@ -73,6 +73,13 @@ def get(song_id: str) -> dict:
         return dict(zip(names, values))
 
 
+def is_exists(song_id: str) -> bool:
+    with sqlite3.connect(EMOTIONS_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM emotions WHERE id = ?', (song_id,))
+        return cursor.fetchone()[0] > 0
+
+
 def count() -> int:
     with sqlite3.connect(EMOTIONS_DB) as conn:
         cursor = conn.cursor()

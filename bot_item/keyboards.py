@@ -5,6 +5,7 @@ from config.kb import (__make_past_item_button,
                        __make_next_page_button,
                        __make_child_button,
                        __make_parent_button,
+                       __make_analytics_button,
 
                        __make_button,
                        __make_page_callback_data)
@@ -172,15 +173,18 @@ def make_album(select_vector: List[int],
 
 def make_song(select_vector: List[int],
               max_page: int,
-              icons: dict):
+              icons: dict,
+              song_id: str):
 
     suffix = suffix_song
 
     parent = __make_parent_button(select_vector, suffix, icons)
 
+    show_emos = __make_analytics_button(song_id, icons)
+
     if max_page <= 1:
         return IMarkup(inline_keyboard=[
-            [parent, NULL_BUTTON],
+            [parent, show_emos],
         ])
 
     past_page = __make_past_page_button(select_vector, suffix, icons, select_vector[3],
@@ -189,14 +193,12 @@ def make_song(select_vector: List[int],
     next_page = __make_next_page_button(select_vector, suffix, icons, select_vector[3],
                                         0, 1, max_page)
 
-    show_emos = 
     return IMarkup(inline_keyboard=[
         [past_page, next_page],
-        [parent, NULL_BUTTON],
+        [parent, show_emos],
     ])
 
-
-def make_users(page_number: int, max_page: int, icons):
+def make_users(page_number: int, max_page: int, icons: dict):
     kb = IBuilder()
 
     if page_number != 1:
@@ -206,7 +208,7 @@ def make_users(page_number: int, max_page: int, icons):
     return kb.adjust(2).as_markup(resize_keyboard=True)
 
 
-def make_query(page_number: int, max_page: int, icons):
+def make_query(page_number: int, max_page: int, icons: dict):
     kb = IBuilder()
 
     if page_number != 1:
@@ -251,7 +253,3 @@ def make_settings(settings_items: dict, page_mode: str):
         kb += [[IButton(text=phrases['button']['next_page'] + settings_items['icon_next_page'], callback_data='pageSET_icon')]]
 
     return IMarkup(inline_keyboard=kb)
-
-
-def make_clear(user_id: int):
-    return IMarkup(inline_keyboard=[[IButton(text=phrases['button']['clear'], callback_data=f'clear_{user_id}')]])
