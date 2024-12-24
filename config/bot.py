@@ -48,6 +48,7 @@ from api.music_yandex import (get_day_song,
                               download_song,
                               get_song_lyrics)
 from bot_item.make_message import *
+from bot_item.make_map import make_map
 from config.phrases import phrases
 
 

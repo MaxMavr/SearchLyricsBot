@@ -289,7 +289,8 @@ async def make_song(event: Union[Message, CallbackQuery], select_vector: List[in
     page_text = ''.join(page_text)
     page_kb = kb.make_song(select_vector,
                            max_page_number,
-                           settings.get_for_kb(event.from_user.id))
+                           settings.get_for_kb(event.from_user.id),
+                           song_id=song_id)
 
     if isinstance(event, Message):
         if settings_items['bool_show_song']:

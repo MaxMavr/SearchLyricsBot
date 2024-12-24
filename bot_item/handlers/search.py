@@ -87,6 +87,15 @@ async def catch_goto_page_song_info(callback: CallbackQuery):
     elif type_of_page == 's':
         await pg.make_song(callback, select_vector)
 
+
+@rt.callback_query(F.data.startswith('anal_'))
+async def catch_goto_page_song_info(callback: CallbackQuery):
+    song_id = callback.data.replace('anal_', '')
+    img = make_map(emotions.get(song_id))
+    await bot.send_photo(chat_id=callback.from_user.id, photo=img)
+    remove(img)
+
+
 # - - - - - - - - Псевдоним команд - - - - - - - -
 
 

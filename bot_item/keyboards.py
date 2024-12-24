@@ -14,6 +14,8 @@ from config.const import (ARTISTS_PAGE_SIZE,
                           ARTIST_PAGE_SIZE,
                           ALBUM_PAGE_SIZE)
 
+import db_interface.emotions as emotions
+
 start = IMarkup(inline_keyboard=[[IButton(text=phrases['button']['read_agreement'], callback_data='read_agreement'),
                                   IButton(text=phrases['button']['admitted'], callback_data='agree')]])
 
@@ -183,9 +185,15 @@ def make_song(select_vector: List[int],
     show_emos = __make_analytics_button(song_id, icons)
 
     if max_page <= 1:
+        if emotions.is_exists(song_id):
+            return IMarkup(inline_keyboard=[
+                [parent, show_emos],
+            ])
+
         return IMarkup(inline_keyboard=[
-            [parent, show_emos],
+            [parent, NULL_BUTTON],
         ])
+
 
     past_page = __make_past_page_button(select_vector, suffix, icons, select_vector[3],
                                         0, 1)
@@ -193,10 +201,17 @@ def make_song(select_vector: List[int],
     next_page = __make_next_page_button(select_vector, suffix, icons, select_vector[3],
                                         0, 1, max_page)
 
+    if emotions.is_exists(song_id):
+        return IMarkup(inline_keyboard=[
+            [past_page, next_page],
+            [parent, show_emos],
+        ])
+
     return IMarkup(inline_keyboard=[
         [past_page, next_page],
-        [parent, show_emos],
+        [parent, NULL_BUTTON],
     ])
+
 
 def make_users(page_number: int, max_page: int, icons: dict):
     kb = IBuilder()
