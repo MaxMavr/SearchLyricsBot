@@ -49,11 +49,12 @@ async def cmd_search(message: Message, args):
     if quantity > MAX_SEARCH_NUMBER:
         quantity = MAX_SEARCH_NUMBER
 
-    query = ' '.join(args)
-    song_line_id = await search_lines(query, quantity)
+    prompt = ' '.join(args)
+    song_line_id = await search_lines(prompt, quantity)
     msg_text = []
     for (song_id, line_id) in song_line_id:
         line = await get_line_by_id(song_id, line_id)
+        query.add(prompt=prompt, answer=line, username=message.from_user.username)
         _, album_id, _ = bonds.get_by_song(song_id)
         link = make_yandex_song_link(song_id, album_id)
         artists_title = ', '.join([artist for artist in await get_artist_title_by_song_id(song_id)])

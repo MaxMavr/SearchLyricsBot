@@ -189,6 +189,7 @@ def make_song(select_vector: List[int],
     next_page = __make_next_page_button(select_vector, suffix, icons, select_vector[3],
                                         0, 1, max_page)
 
+    show_emos = 
     return IMarkup(inline_keyboard=[
         [past_page, next_page],
         [parent, NULL_BUTTON],

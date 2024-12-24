@@ -63,9 +63,9 @@ def add(song_id: str, emo_dict: dict):
 def get(song_id: str) -> dict:
     with sqlite3.connect(EMOTIONS_DB) as conn:
         cursor = conn.cursor()
-        cursor.execute('''SELECT (calmness, joy, ecstasy, recognition, trust, admiration, anxiety, fear, horror,
+        cursor.execute('''SELECT calmness, joy, ecstasy, recognition, trust, admiration, anxiety, fear, horror,
         distraction, surprise, amazement, contemplation, sadness, sorrow, boredom, disgust, aversion, annoyance,
-        anger, fury, interest, anticipation, vigilance) FROM emotions WHERE id = ?''', (song_id,))
+        anger, fury, interest, anticipation, vigilance FROM emotions WHERE id = ?''', (song_id,))
 
         values = cursor.fetchone()
         names = [description[0] for description in cursor.description]
