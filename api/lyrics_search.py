@@ -91,5 +91,3 @@ async def get_line_by_id(song_id: str, line_id: int) -> str:
 
 if __name__ == "__main__":
     asyncio.run(process_raw_artists())
-
-
