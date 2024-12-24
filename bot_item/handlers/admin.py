@@ -6,7 +6,6 @@ rt: Router = Router()
 #  Команда /addraw {имя} — добавить необработанного исполнителя
 #  Команда /raw — посмотреть не обработанных исполнителей
 #  Команда /err — посмотреть не обработанных исполнителей, которых не нашёл алгоритм
-#  Команда /clear_temp — очистить временные файлы (песенки)
 #  Команда /... — Забрать song_info.db
 #  Команда /... — обновить song_info.db
 #  Написать Псевдонимы команд
@@ -23,39 +22,16 @@ async def cmd_query(message: Message):
     await pg.make_query(message, 1)
 
 
-@rt.message(Command(commands='raw'), IsAdmin())  # /raw
+@rt.message(Command(commands='take_gut'), IsAdmin())  # /take_gut
 async def cmd_users(message: Message):
-    # await
-    pass
-
-
-@rt.message(Command(commands='addraw'), IsAdmin())  # /addraw
-async def cmd_users(message: Message):
-    # await
-    pass
-
-
-@rt.message(Command(commands='delraw'), IsAdmin())  # /delraw
-async def cmd_users(message: Message):
-    # await
-    pass
-
-
-@rt.message(Command(commands='err'), IsAdmin())  # /err
-async def cmd_users(message: Message):
-    # await
-    pass
+    for file in listdir(TEMP_DIR):
+        remove(file)
+    await message.answer(phrases['clear_temp'])
 
 
 @rt.message(Command(commands='clear_temp'), IsAdmin())  # /clear_temp
 async def cmd_users(message: Message):
-    # await
-    pass
-
-
-@rt.message(Command(commands='clear_temp'), IsAdmin())  # /clear_temp
-async def cmd_users(message: Message):
-    # await
+    await message.answer(phrases['clear_temp'])
     for file in listdir(TEMP_DIR):
         remove(file)
 

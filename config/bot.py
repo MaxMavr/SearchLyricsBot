@@ -37,7 +37,6 @@ import db_interface.bonds as bonds
 import db_interface.query as query
 
 import bot_item.keyboards as kb
-import config.ids as ids
 
 from bot_item.keyboards import decoding_page_callback
 from api.lyrics_search import get_line_by_id
@@ -167,57 +166,51 @@ def command_with_user_id_argument(func):
     return wrapper
 
 
-def command_with_artist_id_argument(func):
+def command_with_select_artist_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         artist_id = args[0]
-        if len(artist_id) > 3:
-            await message.answer(phrases['error']['long_argument_3'], reply_markup=kb.main)
-            return
-        artist_id = ids.decoding(artist_id)
-        if len(artist_id) < 1:
+
+        if not artists.is_exists(artist_id):
             await message.answer(phrases['error']['artist_not_exist'], reply_markup=kb.main)
             return
-        if artist_id[0] > artists.count():
-            await message.answer(phrases['error']['artist_not_exist'], reply_markup=kb.main)
-            return
-        await func(message, artist_id[:1])
+
+        await func(message, [artists.get_select_number_by_id(artist_id)])
     return wrapper
 
 
-def command_with_album_id_argument(func):
+def command_with_select_album_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         album_id = args[0]
-        if len(album_id) > 6:
-            await message.answer(phrases['error']['long_argument_6'], reply_markup=kb.main)
-            return
-        album_id = ids.decoding(album_id)
-        if len(album_id) < 2:
+
+        if not albums.is_exists(album_id):
             await message.answer(phrases['error']['album_not_exist'], reply_markup=kb.main)
             return
-        if album_id[0] > artists.count() or album_id[1] > albums.count():
-            await message.answer(phrases['error']['album_not_exist'], reply_markup=kb.main)
-            return
-        await func(message, album_id[:2])
+
+        ids = bonds.get_by_album(album_id)
+
+        await func(message,
+                   [artists.get_select_number_by_id(ids[0]),
+                    bonds.get_album_select_number_by_album_id(ids[0], ids[1])])
     return wrapper
 
 
-def command_with_song_id_argument(func):
+def command_with_select_song_id_argument(func):
     @command_with_arguments
     async def wrapper(message: Message, args):
         song_id = args[0]
-        if len(song_id) > 9:
-            await message.answer(phrases['error']['long_argument_9'], reply_markup=kb.main)
-            return
-        song_id = ids.decoding(song_id)
-        if len(song_id) < 3:
+
+        if not songs.is_exists(song_id):
             await message.answer(phrases['error']['song_not_exist'], reply_markup=kb.main)
             return
-        if song_id[0] > artists.count() or song_id[1] > albums.count() or song_id[2] > songs.count():
-            await message.answer(phrases['error']['song_not_exist'], reply_markup=kb.main)
-            return
-        await func(message, song_id[:3])
+
+        ids = bonds.get_by_song(song_id)
+
+        await func(message,
+                   [artists.get_select_number_by_id(ids[0]),
+                    bonds.get_album_select_number_by_album_id(ids[0], ids[1]),
+                    bonds.get_song_select_number_by_song_id(ids[1], ids[2])])
     return wrapper
 
 

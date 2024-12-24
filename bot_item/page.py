@@ -34,7 +34,7 @@ async def make_artists(event: Union[Message, CallbackQuery], select_vector: List
             page_text.append(' ')
 
             if settings_items['bool_show_ids']:
-                page_text.append(f'<code>{ids.encoding(ARTISTS_PAGE_SIZE * (page_number - 1) + i + 1).ljust(4)}</code>')
+                page_text.append(f'<code>{artist_id.ljust(9)}</code>')
 
             if settings_items['bool_show_link']:
                 page_text.append(f'<a href = "{make_yandex_artist_link(artist_id)}">')
@@ -97,7 +97,7 @@ async def make_artist(event: Union[Message, CallbackQuery], select_vector: List[
                 page_text.append(' ')
 
             if settings_items['bool_show_ids']:
-                page_text.append(f'<code>{ids.encoding(select_vector[0], ARTIST_PAGE_SIZE * (page_number - 1) + i + 1).ljust(7)}</code>')
+                page_text.append(f'<code>{album_id.ljust(9)}</code>')
 
             if settings_items['bool_show_link']:
                 page_text.append(f'<a href = "{make_yandex_album_link(album_id)}">')
@@ -189,7 +189,7 @@ async def make_album(event: Union[Message, CallbackQuery], select_vector: List[i
             page_text.append(' ')
 
             if settings_items['bool_show_ids']:
-                page_text.append(f'<code>{ids.encoding(select_vector[0], select_vector[1], ALBUM_PAGE_SIZE * (page_number - 1) + i + 1).ljust(10)}</code>')
+                page_text.append(f'<code>{song_id.ljust(10)}</code>')
 
             if settings_items['bool_show_link']:
                 page_text.append(f'<a href = "{make_yandex_song_link(song_id, album_id)}">')
@@ -314,6 +314,75 @@ async def make_song(event: Union[Message, CallbackQuery], select_vector: List[in
         return
 
     await event.message.edit_text(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)
+
+
+# async def make_song_analyze(event: Union[Message, CallbackQuery], select_vector: List[int]):
+#     await init_page(event)
+#     settings_items = settings.get_for_song(event.from_user.id)
+#
+#     artist_id, _, _ = artists.get_by_select_number(select_vector[0] - 1)
+#     album_id, _, _, _ = bonds.get_albums_by_artist_select_number(artist_id, select_vector[1] - 1)
+#     song_id, song_title, _, have_text, embedded = bonds.get_songs_by_album_select_number(album_id, select_vector[2] - 1)
+#     artists_title = ', '.join(await get_artist_title_by_song_id(song_id))
+#
+#     if settings_items['bool_show_song']:
+#         song = await download_song(artist_id, album_id, song_id, time.time())
+#
+#     lyrics = phrases['error']['empty_lyrics']
+#     if have_text:
+#         lyrics = await get_song_lyrics(song_id)
+#
+#     pages = split_lyrics_into_page(lyrics)
+#     page = pages[select_vector[3] - 1]
+#     max_page_number = len(pages)
+#
+#     page_text = []
+#     if embedded:
+#         page_text.append(settings_items['icon_embedded'])
+#         page_text.append(' ')
+#
+#     if settings_items['bool_show_link']:
+#         page_text.append(f'<a href = "{make_yandex_song_link(song_id, album_id)}">')
+#     page_text.append(f'<b>{song_title}</b>\n')
+#     if settings_items['bool_show_link']:
+#         page_text.append('</a>')
+#     page_text.append(f'{artists_title}\n\n')
+#
+#     page_text.append(page)
+#     page_text.append('\n')
+#
+#     if embedded and settings_items['bool_show_footnote']:
+#         page_text.append(phrases['footnote_embedded'])
+#     page_text.append(make_page_counter(select_vector[3], max_page_number))
+#
+#     page_text = ''.join(page_text)
+#     page_kb = kb.make_song(select_vector,
+#                            max_page_number,
+#                            settings.get_for_kb(event.from_user.id))
+#
+#     if isinstance(event, Message):
+#         if settings_items['bool_show_song']:
+#             msg = await event.answer(text=page_text, reply_markup=page_kb)
+#             await msg.edit_media(media=InputMediaAudio(media=FSInputFile(song, filename=f'{artists_title} - {song_title}'),
+#                                                        caption=page_text), reply_markup=page_kb)
+#             remove(song)
+#             return
+#         await event.answer(text=page_text, reply_markup=page_kb)
+#         return
+#
+#     if settings_items['bool_show_song']:
+#         await event.message.edit_media(
+#             media=InputMediaAudio(media=FSInputFile(song, filename=f'{artists_title} - {song_title}'),
+#                                   caption=page_text), reply_markup=page_kb)
+#         remove(song)
+#         return
+#
+#     if event.message.photo or event.message.audio:
+#         await event.message.answer(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)
+#         await event.message.delete()
+#         return
+#
+#     await event.message.edit_text(text=page_text, disable_web_page_preview=True, reply_markup=page_kb)
 
 
 async def make_users(event: Union[Message, CallbackQuery], page_number: int):

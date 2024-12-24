@@ -50,7 +50,8 @@ def get_albums_by_artist_select_number(id_artist: str, select_number: int) -> tu
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM albums WHERE id IN (
                           SELECT DISTINCT id_album FROM bonds
-                          WHERE id_artist = ?) ORDER BY date DESC LIMIT 1 OFFSET ?''', (id_artist, select_number))
+                          WHERE id_artist = ?) ORDER BY date DESC LIMIT 1 OFFSET ?''',
+                       (id_artist, select_number))
         return cursor.fetchone()
 
 
@@ -59,25 +60,46 @@ def get_songs_by_album_select_number(id_album: str, select_number: int) -> tuple
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM songs WHERE id IN (
                           SELECT DISTINCT id_song FROM bonds
-                          WHERE id_album = ?) ORDER BY number_in_album DESC LIMIT 1 OFFSET ?''', (id_album, select_number))
+                          WHERE id_album = ?) ORDER BY number_in_album DESC LIMIT 1 OFFSET ?''',
+                       (id_album, select_number))
         return cursor.fetchone()
 
 
-def get_ids_by_artist(id_artist: str) -> list:
+def get_album_select_number_by_album_id(artist_id: str, albums_id: str) -> int:
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''WITH SortedAlbums AS (SELECT *, ROW_NUMBER() OVER (ORDER BY date DESC) AS RowNum
+                          FROM albums WHERE id IN (SELECT DISTINCT id_album FROM bonds WHERE id_artist = ?))
+                          SELECT RowNum FROM SortedAlbums WHERE id = ?''',
+                       (artist_id, albums_id,))
+        return cursor.fetchone()[0]
+
+
+def get_song_select_number_by_song_id(albums_id: str, song_id: str) -> int:
+    with sqlite3.connect(SONG_INFO_DB) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''WITH SortedSongs AS (SELECT *, ROW_NUMBER() OVER (ORDER BY number_in_album DESC) AS RowNum
+                          FROM songs WHERE id IN (SELECT DISTINCT id_song FROM bonds WHERE id_album = ?))
+                          SELECT RowNum FROM SortedSongs WHERE id = ?''',
+                       (albums_id, song_id,))
+        return cursor.fetchone()[0]
+
+
+def get_by_artist(id_artist: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_artist = ?', (id_artist,))
         return cursor.fetchall()
 
 
-def get_ids_by_album(id_album: str) -> list:
+def get_by_album(id_album: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_album = ?', (id_album,))
-        return cursor.fetchall()
+        return cursor.fetchone()
 
 
-def get_ids_by_song(id_song: str) -> list:
+def get_by_song(id_song: str) -> list:
     with sqlite3.connect(SONG_INFO_DB) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM bonds WHERE id_song = ?', (id_song,))

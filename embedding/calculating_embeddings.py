@@ -55,8 +55,7 @@ async def search_lines(query: str, quantity: int) -> List[Tuple[str, int]]:
     return song_line_ids
 
 
-
-async def main  ():
+async def main():
     __client = await chromadb.AsyncHttpClient(host='localhost', port=8000)
 
     try:
